@@ -1,0 +1,39 @@
+{
+  "name": "potievdev/slim-rbac",
+  "description": "Role Based Access Control middleware for Slim 3",
+  "keywords": [
+    "slim",
+    "middleware",
+    "authentication",
+    "authorization",
+    "rbac",
+    "potievdev"
+  ],
+  "homepage": "https://github.com/potievdev/slim-rbac",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Abdulmalik Abdulpotiev",
+      "email": "potievdev@gmail.com",
+      "homepage": "http://potievdev.com/",
+      "role": "Developer"
+    }
+  ],
+  "require": {
+    "php" : ">=5.4.0",
+    "codeception/codeception": "^2.3",
+    "robmorgan/phinx": "^0.9.1",
+    "doctrine/orm": "^2.5"
+  },
+  "require-dev": {},
+  "autoload": {
+    "psr-4": {
+      "Potievdev\\SlimRbac\\": "src"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Potievdev\\SlimRbac\\": "tests"
+    }
+  }
+}
