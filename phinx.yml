@@ -1,0 +1,17 @@
+paths:
+    migrations: %%PHINX_CONFIG_DIR%%/src/migrations
+
+environments:
+    default_migration_table: migrations
+    default_database: development
+
+    development:
+        adapter: mysql
+        host: localhost
+        name: slim
+        user: slim
+        pass: 'slim123'
+        port: 3306
+        charset: utf8
+
+version_order: creation
