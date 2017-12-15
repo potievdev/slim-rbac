@@ -9,6 +9,7 @@ use Doctrine\ORM\Mapping as ORM;
  *
  * @ORM\Table(name="role_hierarchy", uniqueConstraints={@ORM\UniqueConstraint(name="idx_role_hierarchy_unique", columns={"parent_role_id", "child_role_id"})}, indexes={@ORM\Index(name="fk_role_hierarchy_child", columns={"child_role_id"}), @ORM\Index(name="IDX_AB8EFB72A44B56EA", columns={"parent_role_id"})})
  * @ORM\Entity(repositoryClass="Potievdev\SlimRbac\Models\Repository\RoleHierarchyRepository")
+ * @ORM\HasLifecycleCallbacks
  */
 class RoleHierarchy
 {
@@ -27,6 +28,20 @@ class RoleHierarchy
      * @ORM\Column(name="created_at", type="datetime", nullable=false)
      */
     private $createdAt;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="parent_role_id", type="integer", nullable=false)
+     */
+    private $parentRoleId;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="child_role_id", type="integer", nullable=false)
+     */
+    private $childRoleId;
 
     /**
      * @var \Potievdev\SlimRbac\Models\Entity\Role
@@ -110,5 +125,11 @@ class RoleHierarchy
     public function setParentRole($parentRole)
     {
         $this->parentRole = $parentRole;
+    }
+
+    /** @ORM\PrePersist */
+    public function prePersist()
+    {
+        $this->createdAt = new \DateTime();
     }
 }

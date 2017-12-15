@@ -9,6 +9,7 @@ use Doctrine\ORM\Mapping as ORM;
  *
  * @ORM\Table(name="role", uniqueConstraints={@ORM\UniqueConstraint(name="idx_role_name", columns={"name"})}, indexes={@ORM\Index(name="idx_role_parent_id", columns={"parent_id"})})
  * @ORM\Entity(repositoryClass="Potievdev\SlimRbac\Models\Repository\RoleRepository")
+ * @ORM\HasLifecycleCallbacks
  */
 class Role
 {
@@ -127,5 +128,17 @@ class Role
     public function setUpdatedAt($updatedAt)
     {
         $this->updatedAt = $updatedAt;
+    }
+
+    /** @ORM\PrePersist */
+    public function prePersist()
+    {
+        $this->createdAt = new \DateTime();
+    }
+
+    /** @ORM\PreUpdate  */
+    public function preUpdate()
+    {
+        $this->updatedAt = new \DateTime();
     }
 }

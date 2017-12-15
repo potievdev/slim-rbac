@@ -21,10 +21,14 @@ class PermissionRepository extends EntityRepository
     {
         $qb = $this->createQueryBuilder('permission');
 
-        $qb->select('permission.id')
+        $result = $qb->select('permission.id')
             ->where($qb->expr()->eq('permission.name', $qb->expr()->literal($permissionName)))
-            ->setMaxResults(1);
+            ->setMaxResults(1)
+            ->getQuery()
+            ->getArrayResult();
 
-        return $qb->getQuery()->getSingleScalarResult();
+        if (count($result) > 0) {
+            return $result[0]['id'];
+        }
     }
 }

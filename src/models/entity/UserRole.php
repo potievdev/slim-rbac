@@ -9,6 +9,7 @@ use Doctrine\ORM\Mapping as ORM;
  *
  * @ORM\Table(name="user_role", uniqueConstraints={@ORM\UniqueConstraint(name="idx_user_role_unique", columns={"user_id", "role_id"})}, indexes={@ORM\Index(name="fk_user_role_role", columns={"role_id"})})
  * @ORM\Entity(repositoryClass="Potievdev\SlimRbac\Models\Repository\UserRoleRepository")
+ * @ORM\HasLifecycleCallbacks
  */
 class UserRole
 {
@@ -20,6 +21,20 @@ class UserRole
      * @ORM\GeneratedValue(strategy="IDENTITY")
      */
     private $id;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="user_id", type="integer", nullable=false)
+     */
+    private $userId;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="role_id", type="integer", nullable=false)
+     */
+    private $roleId;
 
     /**
      * @var \DateTime
@@ -55,6 +70,38 @@ class UserRole
     }
 
     /**
+     * @return int
+     */
+    public function getUserId()
+    {
+        return $this->userId;
+    }
+
+    /**
+     * @param int $userId
+     */
+    public function setUserId($userId)
+    {
+        $this->userId = $userId;
+    }
+
+    /**
+     * @return int
+     */
+    public function getRoleId()
+    {
+        return $this->roleId;
+    }
+
+    /**
+     * @param int $roleId
+     */
+    public function setRoleId($roleId)
+    {
+        $this->roleId = $roleId;
+    }
+
+    /**
      * @return \DateTime
      */
     public function getCreatedAt()
@@ -84,5 +131,11 @@ class UserRole
     public function setRole($role)
     {
         $this->role = $role;
+    }
+
+    /** @ORM\PrePersist */
+    public function prePersist()
+    {
+        $this->createdAt = new \DateTime();
     }
 }

@@ -10,8 +10,9 @@ use Potievdev\SlimRbac\Models\Entity\Permission;
 use Potievdev\SlimRbac\Models\Entity\Role;
 use Potievdev\SlimRbac\Models\Entity\RoleHierarchy;
 use Potievdev\SlimRbac\Models\Entity\RolePermission;
+use Potievdev\SlimRbac\Models\Entity\UserRole;
 use Potievdev\SlimRbac\Models\RepositoryRegistry;
-use Potievdev\Structure\AuthManagerOptions;
+use Potievdev\SlimRbac\Structure\AuthManagerOptions;
 
 /**
  * Class AuthManager
@@ -34,26 +35,48 @@ class AuthManager
      */
     public function __construct(AuthManagerOptions $options)
     {
-        $paths = [ __DIR__ . "/models/entity" ];
-        $isDevMode = $options->getIsDevMode();
+        $em = $options->getEntityManager();
 
-        // the connection configuration
-        $dbParams = [
-            'driver'   => $options->getDatabaseAdapter(),
-            'user'     => $options->getDatabaseUsername(),
-            'password' => $options->getDatabasePassword(),
-            'dbname'   => $options->getDatabaseName(),
-            'port'     => $options->getDatabasePort(),
-            'charset'  => $options->getDatabaseCharset()
-        ];
+        if (!isset($em)) {
 
-        $config = Setup::createAnnotationMetadataConfiguration($paths, $isDevMode);
+            $paths = [ __DIR__ . "/models/entity" ];
+            $isDevMode = $options->getIsDevMode();
 
-        $this->entityManager = EntityManager::create($dbParams, $config);
+            // the connection configuration
+            $dbParams = [
+                'driver'   => $options->getDatabaseAdapter(),
+                'user'     => $options->getDatabaseUsername(),
+                'password' => $options->getDatabasePassword(),
+                'dbname'   => $options->getDatabaseName(),
+                'port'     => $options->getDatabasePort(),
+                'charset'  => $options->getDatabaseCharset()
+            ];
 
-        $this->pdo = $this->entityManager->getConnection();
+            $config = Setup::createAnnotationMetadataConfiguration($paths, $isDevMode);
+
+            $this->entityManager = EntityManager::create($dbParams, $config);
+        } else {
+
+            $this->entityManager = $em;
+        }
+
+        $this->pdo = $this->entityManager->getConnection()->getWrappedConnection();
 
         $this->repositoryRegistry = new RepositoryRegistry($this->entityManager);
+    }
+
+    /**
+     * Truncates all tables
+     */
+    public function removeAll()
+    {
+        $this->pdo->query('SET FOREIGN_KEY_CHECKS=0')->execute();
+        $this->pdo->prepare('TRUNCATE role_permission')->execute();
+        $this->pdo->prepare('TRUNCATE role_hierarchy')->execute();
+        $this->pdo->prepare('TRUNCATE role')->execute();
+        $this->pdo->prepare('TRUNCATE permission')->execute();
+        $this->pdo->prepare('TRUNCATE user_role')->execute();
+        $this->pdo->query('SET FOREIGN_KEY_CHECKS=0')->execute();
     }
 
     /**
@@ -66,9 +89,9 @@ class AuthManager
     }
 
     /**
-     * @param Permission $role
+     * @param Role $role
      */
-    public function addRole(Permission $role)
+    public function addRole(Role $role)
     {
         $this->entityManager->persist($role);
         $this->entityManager->flush();
@@ -111,7 +134,7 @@ class AuthManager
      * @return bool
      * @throws PermissionNotFoundException
      */
-    public function can($userId, $permissionName, $params)
+    public function can($userId, $permissionName, $params = [])
     {
         /** @var integer $permissionId */
         $permissionId = $this->repositoryRegistry
@@ -136,5 +159,21 @@ class AuthManager
         }
 
         return false;
+    }
+
+    /**
+     * Assign role to user
+     * @param integer $userId
+     * @param Role $role
+     */
+    public function assignRoleToUser($userId, Role $role)
+    {
+        $userRole = new UserRole();
+
+        $userRole->setUserId($userId);
+        $userRole->setRole($role);
+
+        $this->entityManager->persist($userRole);
+        $this->entityManager->flush();
     }
 }

@@ -9,6 +9,7 @@ use Doctrine\ORM\Mapping as ORM;
  *
  * @ORM\Table(name="role_permission", uniqueConstraints={@ORM\UniqueConstraint(name="idx_role_permission_unique", columns={"role_id", "permission_id"})}, indexes={@ORM\Index(name="fk_role_permission_permission", columns={"permission_id"}), @ORM\Index(name="IDX_6F7DF886D60322AC", columns={"role_id"})})
  * @ORM\Entity(repositoryClass="Potievdev\SlimRbac\Models\Repository\RolePermissionRepository")
+ * @ORM\HasLifecycleCallbacks
  */
 class RolePermission
 {
@@ -27,6 +28,20 @@ class RolePermission
      * @ORM\Column(name="created_at", type="datetime", nullable=false)
      */
     private $createdAt;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="role_id", type="integer", nullable=false)
+     */
+    private $roleId;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="permission_id", type="integer", nullable=false)
+     */
+    private $permissionId;
 
     /**
      * @var \Potievdev\SlimRbac\Models\Entity\Permission
@@ -62,6 +77,38 @@ class RolePermission
     public function setId($id)
     {
         $this->id = $id;
+    }
+
+    /**
+     * @return int
+     */
+    public function getRoleId()
+    {
+        return $this->roleId;
+    }
+
+    /**
+     * @param int $roleId
+     */
+    public function setRoleId($roleId)
+    {
+        $this->roleId = $roleId;
+    }
+
+    /**
+     * @return int
+     */
+    public function getPermissionId()
+    {
+        return $this->permissionId;
+    }
+
+    /**
+     * @param int $permissionId
+     */
+    public function setPermissionId($permissionId)
+    {
+        $this->permissionId = $permissionId;
     }
 
     /**
@@ -110,5 +157,11 @@ class RolePermission
     public function setRole($role)
     {
         $this->role = $role;
+    }
+
+    /** @ORM\PrePersist */
+    public function prePersist()
+    {
+        $this->createdAt = new \DateTime();
     }
 }

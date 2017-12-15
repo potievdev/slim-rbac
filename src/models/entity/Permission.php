@@ -9,6 +9,7 @@ use Doctrine\ORM\Mapping as ORM;
  *
  * @ORM\Table(name="permission", uniqueConstraints={@ORM\UniqueConstraint(name="idx_role_name", columns={"name"})})
  * @ORM\Entity(repositoryClass="Potievdev\SlimRbac\Models\Repository\PermissionRepository")
+ * @ORM\HasLifecycleCallbacks
  */
 class Permission
 {
@@ -127,5 +128,17 @@ class Permission
     public function setUpdatedAt($updatedAt)
     {
         $this->updatedAt = $updatedAt;
+    }
+
+    /** @ORM\PrePersist */
+    public function prePersist()
+    {
+        $this->createdAt = new \DateTime();
+    }
+
+    /** @ORM\PreUpdate  */
+    public function preUpdate()
+    {
+        $this->updatedAt = new \DateTime();
     }
 }

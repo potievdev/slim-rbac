@@ -23,9 +23,12 @@ class RoleHierarchyRepository extends EntityRepository
         $qb = $this->createQueryBuilder('roleHierarchy');
 
         $qb->select('roleHierarchy.childRoleId')
-            ->where($qb->expr()->in( 'roleHierarchy.parentRoleId', $parentIds));
+            ->where($qb->expr()->in( 'roleHierarchy.parentRoleId', $parentIds))
+            ->indexBy('roleHierarchy', 'roleHierarchy.childRoleId');
 
-        return $qb->getQuery()->getArrayResult();
+        $childRoleIds =  $qb->getQuery()->getArrayResult();
+
+        return array_keys($childRoleIds);
     }
 
     /**

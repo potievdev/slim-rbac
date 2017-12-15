@@ -1,6 +1,6 @@
 <?php
 
-namespace Potievdev\Structure;
+namespace Potievdev\SlimRbac\Structure;
 
 /**
  * Authorization manager options structure.
@@ -18,6 +18,9 @@ class AuthManagerOptions
 
     /** Default charset for connecting to database */
     const MYSQL_DEFAULT_CHARSET = 'utf8';
+
+    /** @var  \Doctrine\ORM\EntityManager */
+    private $entityManager;
 
     /** @var  string */
     private $databaseAdapter = self::MYSQL_ADAPTER;
@@ -39,6 +42,22 @@ class AuthManagerOptions
 
     /** @var  boolean */
     private $isDevMode = false;
+
+    /**
+     * @return \Doctrine\ORM\EntityManager
+     */
+    public function getEntityManager()
+    {
+        return $this->entityManager;
+    }
+
+    /**
+     * @param \Doctrine\ORM\EntityManager $entityManager
+     */
+    public function setEntityManager($entityManager)
+    {
+        $this->entityManager = $entityManager;
+    }
 
     /**
      * @return string
