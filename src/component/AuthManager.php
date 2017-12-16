@@ -2,17 +2,11 @@
 
 namespace Potievdev\SlimRbac\Component;
 
-use Doctrine\DBAL\Driver\PDOConnection;
-use Doctrine\ORM\EntityManager;
-use Doctrine\ORM\Tools\Setup;
-use Potievdev\Exception\PermissionNotFoundException;
 use Potievdev\SlimRbac\Models\Entity\Permission;
 use Potievdev\SlimRbac\Models\Entity\Role;
 use Potievdev\SlimRbac\Models\Entity\RoleHierarchy;
 use Potievdev\SlimRbac\Models\Entity\RolePermission;
 use Potievdev\SlimRbac\Models\Entity\UserRole;
-use Potievdev\SlimRbac\Models\RepositoryRegistry;
-use Potievdev\SlimRbac\Structure\AuthManagerOptions;
 
 /**
  * Class AuthManager

@@ -2,7 +2,6 @@
 
 namespace Potievdev\SlimRbac\Console\Command;
 
-use Doctrine\DBAL\Connection;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
