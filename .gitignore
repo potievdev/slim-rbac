@@ -1,3 +1,5 @@
-vendor
+# Exclude vendor packages
+vendor/*
 
+# Exclude PhpStorm files
 .idea
