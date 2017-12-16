@@ -69,7 +69,7 @@ class BaseCommand extends Command
         /** @var \Doctrine\DBAL\Connection $connection */
         $connection = $connectionHelper->getConnection();
 
-        $paths['migrations'] = __DIR__ . '/../migrations';
+        $paths['migrations'] = __DIR__ . '/../../migrations';
 
         $environments['default_migration_table'] = $this->migrationTableName;
 
