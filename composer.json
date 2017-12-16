@@ -21,11 +21,12 @@
   ],
   "require": {
     "php" : ">=5.4.0",
-    "codeception/codeception": "^2.3",
     "robmorgan/phinx": "^0.9.1",
     "doctrine/orm": "^2.5"
   },
-  "require-dev": {},
+  "require-dev": {
+    "codeception/codeception": "^2.3"
+  },
   "autoload": {
     "psr-4": {
       "Potievdev\\SlimRbac\\": "src"

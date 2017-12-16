@@ -38,8 +38,8 @@ class BaseCommand extends Command
     {
 
         $cliConfigPaths = [
-            __DIR__ . '/../../../../cli-config.php',
-            __DIR__ . '/../../../../config/cli-config.php',
+            __DIR__ . '/../../../../../../cli-config.php',
+            __DIR__ . '/../../../../../../config/cli-config.php',
         ];
 
         if ($input->hasOption('cli-path')) {
