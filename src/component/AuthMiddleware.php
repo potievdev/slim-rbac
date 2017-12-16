@@ -20,7 +20,7 @@ class AuthMiddleware extends BaseComponent
      */
     private function checkAccess($userId, $permissionName)
     {
-        if (is_integer($userId)) {
+        if ( ! is_integer($userId)) {
             throw new \Exception('User identifier not defined');
         }
 
