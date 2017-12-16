@@ -1,0 +1,5 @@
+#!/usr/bin/env php
+<?php
+
+$app = require __DIR__ . '/../app/slim-rbac.php';
+$app->run();

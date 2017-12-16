@@ -1,6 +1,6 @@
 <?php
 
-namespace Potievdev\SlimRbac;
+namespace Potievdev\SlimRbac\Component;
 
 use Doctrine\DBAL\Driver\PDOConnection;
 use Doctrine\ORM\EntityManager;

@@ -3,15 +3,19 @@
 namespace Tests\Unit;
 
 use PHPUnit_Framework_TestCase;
-use Potievdev\SlimRbac\AuthManager;
+use Potievdev\SlimRbac\Component\AuthManager;
 use Potievdev\SlimRbac\Models\Entity\Permission;
 use Potievdev\SlimRbac\Models\Entity\Role;
 use Potievdev\SlimRbac\Structure\AuthManagerOptions;
 
 class AuthManagerTest extends PHPUnit_Framework_TestCase
 {
+    /** Moderator user identifier */
     const MODERATOR_USER_ID = 1;
+    /** Admin user identifier */
     const ADMIN_USER_ID = 2;
+    /** User with this id not exists in database */
+    const NOT_USER_ID = 3;
 
     /** @var  AuthManager $authManager */
     protected $authManager;
@@ -57,12 +61,23 @@ class AuthManagerTest extends PHPUnit_Framework_TestCase
         $this->authManager->assignRoleToUser(self::ADMIN_USER_ID, $admin);
     }
 
+    /**
+     * Testing has permission cases
+     */
     public function testHasPermission()
     {
         $this->assertTrue($this->authManager->can(self::ADMIN_USER_ID, 'edit'));
+        $this->assertTrue($this->authManager->can(self::ADMIN_USER_ID, 'write'));
+    }
+
+    /**
+     * Testing not have permission cases
+     */
+    public function testHasNotPermission()
+    {
+        $this->assertFalse($this->authManager->can(self::MODERATOR_USER_ID, 'write'));
         $this->assertFalse($this->authManager->can(self::ADMIN_USER_ID, 'none_permission'));
         $this->assertFalse($this->authManager->can(self::MODERATOR_USER_ID, 'none_permission'));
-        $this->assertTrue($this->authManager->can(self::ADMIN_USER_ID, 'write'));
-        $this->assertFalse($this->authManager->can(self::MODERATOR_USER_ID, 'write'));
+        $this->assertFalse($this->authManager->can(self::NOT_USER_ID, 'edit'));
     }
 }
