@@ -16,9 +16,14 @@ class AuthMiddleware extends BaseComponent
      * @param integer $userId
      * @param string $permissionName
      * @return bool
+     * @throws \Exception
      */
     private function checkAccess($userId, $permissionName)
     {
+        if (is_integer($userId)) {
+            throw new \Exception('User identifier not defined');
+        }
+
         /** @var integer $permissionId */
         $permissionId = $this->repositoryRegistry
             ->getPermissionRepository()
@@ -64,7 +69,7 @@ class AuthMiddleware extends BaseComponent
         $permitted = $this->checkAccess($userId, $permissionName);
 
         /** @var ResponseInterface $response */
-        $response->getBody()->write("Checking $permissionName $permitted");
+        $response->getBody()->write("$permissionName $permitted");
 
         $response = $next($request, $response);
 
