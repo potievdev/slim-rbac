@@ -40,10 +40,10 @@ class RoleHierarchyRepository extends EntityRepository
     {
         $allChildIds = [];
 
-        do {
+        while (count($parentIds) > 0) {
             $parentIds = $this->getChildIds($parentIds);
             $allChildIds = ArrayHelper::merge($allChildIds, $parentIds);
-        } while (count($parentIds) > 0);
+        };
 
         return $allChildIds;
     }
