@@ -18,65 +18,32 @@ use Potievdev\SlimRbac\Structure\AuthManagerOptions;
  * Class AuthManager
  * @package Potievdev\SlimRbac\Component
  */
-class AuthManager
+class AuthManager extends BaseComponent
 {
-    /** @var  PDOConnection $pdo */
-    private $pdo;
-
-    /** @var  EntityManager $entityManager */
-    private $entityManager;
-
-    /** @var  RepositoryRegistry $repositoryRegistry */
-    private $repositoryRegistry;
-
-    /**
-     * AuthManager constructor.
-     * @param AuthManagerOptions $options
-     */
-    public function __construct(AuthManagerOptions $options)
-    {
-        $em = $options->getEntityManager();
-
-        if (!isset($em)) {
-
-            $paths = [ __DIR__ . "/models/entity" ];
-            $isDevMode = $options->getIsDevMode();
-
-            // the connection configuration
-            $dbParams = [
-                'driver'   => $options->getDatabaseAdapter(),
-                'user'     => $options->getDatabaseUsername(),
-                'password' => $options->getDatabasePassword(),
-                'dbname'   => $options->getDatabaseName(),
-                'port'     => $options->getDatabasePort(),
-                'charset'  => $options->getDatabaseCharset()
-            ];
-
-            $config = Setup::createAnnotationMetadataConfiguration($paths, $isDevMode);
-
-            $this->entityManager = EntityManager::create($dbParams, $config);
-        } else {
-
-            $this->entityManager = $em;
-        }
-
-        $this->pdo = $this->entityManager->getConnection()->getWrappedConnection();
-
-        $this->repositoryRegistry = new RepositoryRegistry($this->entityManager);
-    }
-
     /**
      * Truncates all tables
      */
     public function removeAll()
     {
-        $this->pdo->query('SET FOREIGN_KEY_CHECKS=0')->execute();
-        $this->pdo->prepare('TRUNCATE role_permission')->execute();
-        $this->pdo->prepare('TRUNCATE role_hierarchy')->execute();
-        $this->pdo->prepare('TRUNCATE role')->execute();
-        $this->pdo->prepare('TRUNCATE permission')->execute();
-        $this->pdo->prepare('TRUNCATE user_role')->execute();
-        $this->pdo->query('SET FOREIGN_KEY_CHECKS=0')->execute();
+        $pdo = $this->entityManager->getConnection()->getWrappedConnection();
+        $pdo->beginTransaction();
+
+        try {
+
+            $pdo->exec('SET FOREIGN_KEY_CHECKS=0');
+            $pdo->exec('TRUNCATE role_permission');
+            $pdo->exec('TRUNCATE role_hierarchy');
+            $pdo->exec('TRUNCATE role');
+            $pdo->exec('TRUNCATE permission');
+            $pdo->exec('TRUNCATE user_role');
+            $pdo->exec('SET FOREIGN_KEY_CHECKS=0');
+
+            $pdo->commit();
+
+        } catch (\Exception $e) {
+            $pdo->rollBack();
+            throw new \Exception($e->getMessage());
+        }
     }
 
     /**
@@ -125,40 +92,6 @@ class AuthManager
 
         $this->entityManager->persist($roleHierarchy);
         $this->entityManager->flush();
-    }
-
-    /**
-     * @param integer $userId
-     * @param string $permissionName
-     * @param array $params
-     * @return bool
-     * @throws PermissionNotFoundException
-     */
-    public function can($userId, $permissionName, $params = [])
-    {
-        /** @var integer $permissionId */
-        $permissionId = $this->repositoryRegistry
-            ->getPermissionRepository()
-            ->getPermissionIdByName($permissionName);
-
-        if (is_integer($permissionId)) {
-
-            /** @var integer[] $rootRoleIds */
-            $rootRoleIds = $this->repositoryRegistry
-                ->getUserRoleRepository()
-                ->getUserRoleIds($userId);
-
-            /** @var integer[] $allRoleIds */
-            $allRoleIds = $this->repositoryRegistry
-                ->getRoleHierarchyRepository()
-                ->getAllRoleIdsHierarchy($rootRoleIds);
-
-            return $this->repositoryRegistry
-                ->getRolePermissionRepository()
-                ->isPermissionAssigned($permissionId, $allRoleIds);
-        }
-
-        return false;
     }
 
     /**

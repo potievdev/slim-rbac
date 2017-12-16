@@ -22,7 +22,8 @@
   "require": {
     "php" : ">=5.4.0",
     "robmorgan/phinx": "^0.9.1",
-    "doctrine/orm": "^2.5"
+    "doctrine/orm": "^2.5",
+    "psr/http-message": "^1.0"
   },
   "require-dev": {
     "codeception/codeception": "^2.3"
