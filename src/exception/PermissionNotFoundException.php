@@ -1,10 +1,11 @@
 <?php
 
-namespace Potievdev\Exception;
+namespace Potievdev\SlimRbac\Exception;
 
 /**
+ * Permission not found in database exception
  * Class PermissionNotFoundException
- * @package Potievdev\Exception
+ * @package Potievdev\SlimRbac\Exception
  */
 class PermissionNotFoundException extends \Exception
 {

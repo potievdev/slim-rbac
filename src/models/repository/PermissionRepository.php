@@ -30,5 +30,7 @@ class PermissionRepository extends EntityRepository
         if (count($result) > 0) {
             return $result[0]['id'];
         }
+
+        return null;
     }
 }

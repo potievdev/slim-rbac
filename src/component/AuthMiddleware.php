@@ -2,6 +2,8 @@
 
 namespace Potievdev\SlimRbac\Component;
 
+use Potievdev\SlimRbac\Exception\InvalidArgumentException;
+use Potievdev\SlimRbac\Helper\ValidatorHelper;
 use Psr\Http\Message\ServerRequestInterface;
 use \Psr\Http\Message\ResponseInterface;
 
@@ -13,15 +15,16 @@ use \Psr\Http\Message\ResponseInterface;
 class AuthMiddleware extends BaseComponent
 {
     /**
+     * Checks access status
      * @param integer $userId
      * @param string $permissionName
      * @return bool
      * @throws \Exception
      */
-    private function checkAccess($userId, $permissionName)
+    public function checkAccess($userId, $permissionName)
     {
-        if ( ! is_integer($userId)) {
-            throw new \Exception('User identifier not defined');
+        if (ValidatorHelper::isInteger($userId) == false) {
+            throw new InvalidArgumentException('User identifier must be number.');
         }
 
         /** @var integer $permissionId */
@@ -29,12 +32,16 @@ class AuthMiddleware extends BaseComponent
             ->getPermissionRepository()
             ->getPermissionIdByName($permissionName);
 
-        if (is_integer($permissionId)) {
+        if (ValidatorHelper::isInteger($permissionId)) {
 
             /** @var integer[] $rootRoleIds */
             $rootRoleIds = $this->repositoryRegistry
                 ->getUserRoleRepository()
                 ->getUserRoleIds($userId);
+
+            // If user has not assigned roles
+            if (count($rootRoleIds) == 0)
+                return false;
 
             /** @var integer[] $allRoleIds */
             $allRoleIds = $this->repositoryRegistry

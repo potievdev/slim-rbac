@@ -1,18 +1,18 @@
 <?php
 
 /**
- * Configurations file
+ * Configurations for entity manager
  */
+
 return [
-    'displayErrorDetails' => true,
     'devMode' => true,
-    'entitiesDir' => __DIR__ . '/../models/entity',
+    'entitiesDir' => __DIR__ . '/../src/models/entity',
     'db' => [
         'driver'   => 'pdo_mysql',
         'host'     => 'localhost',
-        'user'     => 'slim',
-        'password' => 'slim123',
-        'dbname'   => 'slim',
+        'user'     => 'username',
+        'password' => 'password',
+        'dbname'   => 'database_name',
         'port'     => 3306
     ]
 ];

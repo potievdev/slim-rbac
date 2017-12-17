@@ -8,7 +8,7 @@ namespace Potievdev\SlimRbac\Structure;
  * Class AuthManagerOptions
  * @package Potievdev\Structure
  */
-class AuthManagerOptions
+class AuthOptions
 {
     /** Default adapter for doctrine orm */
     const MYSQL_ADAPTER = 'pdo_mysql';

@@ -32,6 +32,33 @@ class RoleHierarchyRepository extends EntityRepository
     }
 
     /**
+     * Finding child identifier in roles three where $parentRoleId is in the top of three
+     * @param integer $parentRoleId
+     * @param integer $findingChildId
+     * @return bool
+     */
+    public function hasChildRoleId($parentRoleId, $findingChildId)
+    {
+        $childIds = $this->getChildIds([$parentRoleId]);
+
+        if (count($childIds) > 0) {
+
+            if (in_array($findingChildId, $childIds))
+                return true;
+
+            foreach ($childIds as $childId) {
+
+                if ($this->hasChildRoleId($childId, $findingChildId) == true) {
+                    return true;
+                }
+
+            }
+        }
+
+        return false;
+    }
+
+    /**
      * Returns all child role ids for given parent role ids
      * @param integer[] $parentIds
      * @return integer[]

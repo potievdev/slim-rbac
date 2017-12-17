@@ -4,9 +4,10 @@ namespace Tests\Unit;
 
 use PHPUnit_Framework_TestCase;
 use Potievdev\SlimRbac\Component\AuthManager;
+use Potievdev\SlimRbac\Component\AuthMiddleware;
 use Potievdev\SlimRbac\Models\Entity\Permission;
 use Potievdev\SlimRbac\Models\Entity\Role;
-use Potievdev\SlimRbac\Structure\AuthManagerOptions;
+use Potievdev\SlimRbac\Structure\AuthOptions;
 
 class AuthManagerTest extends PHPUnit_Framework_TestCase
 {
@@ -20,9 +21,15 @@ class AuthManagerTest extends PHPUnit_Framework_TestCase
     /** @var  AuthManager $authManager */
     protected $authManager;
 
+    /** @var  AuthMiddleware $authMiddleware */
+    protected $authMiddleware;
+
+    /**
+     * Configuring testing environment
+     */
     public function setUp()
     {
-        $helperSet = require __DIR__ . '/../../cli-config.php';
+        $helperSet = require __DIR__ . '/../../config/cli-config.php';
 
         /** @var \Doctrine\ORM\Tools\Console\Helper\EntityManagerHelper $entityManagerHelper */
         $entityManagerHelper = $helperSet->get('em');
@@ -30,10 +37,12 @@ class AuthManagerTest extends PHPUnit_Framework_TestCase
         /** @var \Doctrine\ORM\EntityManager $entityManager */
         $entityManager = $entityManagerHelper->getEntityManager();
 
-        $authManagerOptions = new AuthManagerOptions();
-        $authManagerOptions->setEntityManager($entityManager);
+        $authOptions = new AuthOptions();
+        $authOptions->setEntityManager($entityManager);
 
-        $this->authManager = new AuthManager($authManagerOptions);
+        $this->authMiddleware = new AuthMiddleware($authOptions);
+
+        $this->authManager = new AuthManager($authOptions);
 
         $this->authManager->removeAll();
 
@@ -64,20 +73,20 @@ class AuthManagerTest extends PHPUnit_Framework_TestCase
     /**
      * Testing has permission cases
      */
-    public function testHasPermission()
+    public function testAccessTrue()
     {
-        $this->assertTrue($this->authManager->can(self::ADMIN_USER_ID, 'edit'));
-        $this->assertTrue($this->authManager->can(self::ADMIN_USER_ID, 'write'));
+        $this->assertTrue($this->authMiddleware->checkAccess(self::ADMIN_USER_ID, 'edit'));
+        $this->assertTrue($this->authMiddleware->checkAccess(self::ADMIN_USER_ID, 'write'));
     }
 
     /**
      * Testing not have permission cases
      */
-    public function testHasNotPermission()
+    public function testAccessFalse()
     {
-        $this->assertFalse($this->authManager->can(self::MODERATOR_USER_ID, 'write'));
-        $this->assertFalse($this->authManager->can(self::ADMIN_USER_ID, 'none_permission'));
-        $this->assertFalse($this->authManager->can(self::MODERATOR_USER_ID, 'none_permission'));
-        $this->assertFalse($this->authManager->can(self::NOT_USER_ID, 'edit'));
+        $this->assertFalse($this->authMiddleware->checkAccess(self::MODERATOR_USER_ID, 'write'));
+        $this->assertFalse($this->authMiddleware->checkAccess(self::ADMIN_USER_ID, 'none_permission'));
+        $this->assertFalse($this->authMiddleware->checkAccess(self::MODERATOR_USER_ID, 'none_permission'));
+        $this->assertFalse($this->authMiddleware->checkAccess(self::NOT_USER_ID, 'edit'));
     }
 }

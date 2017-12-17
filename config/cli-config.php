@@ -3,8 +3,10 @@
 use Doctrine\ORM\Tools\Setup;
 use Doctrine\ORM\EntityManager;
 
-$paths = [];
-$isDevMode = true;
+$config = require 'config.php';
+
+$paths = [$config['entitiesDir']];
+$isDevMode = $config['devMode'];
 $dbParams = $config['db'];
 
 $config = Setup::createAnnotationMetadataConfiguration($paths, $isDevMode, null, null, false);

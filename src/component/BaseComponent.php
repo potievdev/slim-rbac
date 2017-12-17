@@ -5,7 +5,7 @@ namespace Potievdev\SlimRbac\Component;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Tools\Setup;
 use Potievdev\SlimRbac\Models\RepositoryRegistry;
-use Potievdev\SlimRbac\Structure\AuthManagerOptions;
+use Potievdev\SlimRbac\Structure\AuthOptions;
 
 class BaseComponent
 {
@@ -17,9 +17,9 @@ class BaseComponent
 
     /**
      * AuthManager constructor.
-     * @param AuthManagerOptions $options
+     * @param AuthOptions $options
      */
-    public function __construct(AuthManagerOptions $options)
+    public function __construct(AuthOptions $options)
     {
         $em = $options->getEntityManager();
 
