@@ -76,9 +76,11 @@ class AuthMiddleware extends BaseComponent
         $permitted = $this->checkAccess($userId, $permissionName);
 
         /** @var ResponseInterface $response */
-        $response->getBody()->write("$permissionName $permitted");
-
-        $response = $next($request, $response);
+        if ($permitted == false) {
+            $response = $response->withStatus(403, 'Permission denied');
+        } else {
+            $response = $next($request, $response);
+        }
 
         return $response;
     }

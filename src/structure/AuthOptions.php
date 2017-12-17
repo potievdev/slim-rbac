@@ -5,7 +5,7 @@ namespace Potievdev\SlimRbac\Structure;
 /**
  * Authorization manager options structure.
  * The instance of this class accepted as argument for constructor of AuthManager
- * Class AuthManagerOptions
+ * Class AuthOptions
  * @package Potievdev\Structure
  */
 class AuthOptions
