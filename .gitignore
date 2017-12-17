@@ -3,3 +3,6 @@ vendor/*
 
 # Exclude PhpStorm files
 .idea
+
+# Exclude configurations file
+config/config.php
