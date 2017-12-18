@@ -11,5 +11,5 @@ php:
   - '5.4'
 script:
   - ./bin/slim-rbac migrate --cli-path=config/cli-config.php
-  - vendor/bin/codecept run
+  - vendor/bin/codecept  run --coverage --coverage-xml --coverage-html
   
