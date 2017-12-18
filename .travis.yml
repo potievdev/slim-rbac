@@ -9,11 +9,11 @@ before_install:
 language: php
 php:
   - '5.4'
-  
+
 script:
   - ./bin/slim-rbac migrate --cli-path=config/cli-config.php
   - vendor/bin/codecept  run --coverage --coverage-xml
-  - cp tests/_output/coverage-xml ./coverage.xml
+  - cp tests/_output/coverage.xml ./coverage.xml
   - cp tests/_output/coverage.serialized ./coverage.serialized
 
 after_success:
