@@ -3,8 +3,14 @@ services:
 
 before_install:
   - mysql -e 'CREATE DATABASE IF NOT EXISTS test;'
+  - cp config/config.example.php config/config.php
+  - composer install
 
 language: php
 php:
   - '5.4'
   - '5.6'
+script:
+  - src/bin/slim-rbac migrate --sli-path=config/cli-config.php
+  - vendor/bin/codecept run
+  
