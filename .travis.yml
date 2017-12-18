@@ -4,7 +4,7 @@ services:
 before_install:
   - mysql -e 'CREATE DATABASE IF NOT EXISTS test;'
   - cp config/config.example.php config/config.php
-  - composer install
+  - composer update
 
 language: php
 php:
