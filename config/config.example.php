@@ -10,9 +10,9 @@ return [
     'db' => [
         'driver'   => 'pdo_mysql',
         'host'     => 'localhost',
-        'user'     => 'username',
-        'password' => 'password',
-        'dbname'   => 'database_name',
+        'user'     => 'root',
+        'password' => '',
+        'dbname'   => 'test',
         'port'     => 3306
     ]
 ];
