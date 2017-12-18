@@ -76,11 +76,12 @@ class BaseCommand extends Command
         $environments['default_database'] = $this->environment;
 
         $environments[$this->environment] = [
+            'adapter'    => 'mysql',
             'host'       => $connection->getHost(),
             'name'       => $connection->getDatabase(),
             'user'       => $connection->getUsername(),
             'pass'       => $connection->getPassword(),
-            'connection' => $connection->getWrappedConnection()
+            //'connection' => $connection->getWrappedConnection()
         ];
 
         $configArray['paths'] = $paths;
