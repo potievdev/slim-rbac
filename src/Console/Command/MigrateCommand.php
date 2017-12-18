@@ -4,6 +4,8 @@ namespace Potievdev\SlimRbac\Console\Command;
 
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Console\Input\StringInput;
+use Symfony\Component\Console\Output\NullOutput;
 use Symfony\Component\Console\Output\OutputInterface;
 use Phinx\Migration\Manager;
 
@@ -31,7 +33,7 @@ class MigrateCommand extends BaseCommand
     public function execute(InputInterface $input, OutputInterface $output)
     {
         parent::execute($input, $output);
-        $manager = new Manager($this->config, $input, $output);
+        $manager = new Manager($this->config, new StringInput(' '), new NullOutput());
         $manager->migrate($this->config->getDefaultEnvironment());
     }
 }
