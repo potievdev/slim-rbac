@@ -11,4 +11,6 @@ extensions:
 coverage:
     enabled: true
     include:
-        - src/*
+        - src/Component/
+        - src/Helper/
+        - src/Models/

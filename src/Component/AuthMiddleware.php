@@ -2,10 +2,8 @@
 
 namespace Potievdev\SlimRbac\Component;
 
-use Potievdev\SlimRbac\Exception\InvalidArgumentException;
-use Potievdev\SlimRbac\Helper\ValidatorHelper;
 use Psr\Http\Message\ServerRequestInterface;
-use \Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ResponseInterface;
 
 /**
  * Checking Access Middleware
