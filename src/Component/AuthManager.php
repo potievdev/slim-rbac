@@ -30,7 +30,7 @@ class AuthManager extends BaseComponent
             ->getRoleHierarchyRepository()
             ->hasChildRoleId($parentRoleId, $childRoleId);
 
-        if ($result == true) {
+        if ($result === true) {
             throw new CyclicException('There detected cyclic line. Role with id = ' . $parentRoleId . ' has child role whit id =' . $childRoleId);
         }
     }
@@ -59,6 +59,32 @@ class AuthManager extends BaseComponent
             $pdo->rollBack();
             throw new \Exception($e->getMessage());
         }
+    }
+
+    /**
+     * Creates permission instance with given name and return it
+     * @param string $permissionMane
+     * @return Permission
+     */
+    public function createPermission($permissionMane)
+    {
+        $permission = new Permission();
+        $permission->setName($permissionMane);
+
+        return $permission;
+    }
+
+    /**
+     * Creates role instance with given name and return it
+     * @param string $roleName
+     * @return Role
+     */
+    public function createRole($roleName)
+    {
+        $role = new Role();
+        $role->setName($roleName);
+
+        return $role;
     }
 
     /**
@@ -97,7 +123,7 @@ class AuthManager extends BaseComponent
      * @param Permission $permission
      * @throws NotUniqueException
      */
-    public function addPermissionToRole(Role $role, Permission $permission)
+    public function addChildPermission(Role $role, Permission $permission)
     {
         $rolePermission = new RolePermission();
 
@@ -118,7 +144,7 @@ class AuthManager extends BaseComponent
      * @param Role $childRole
      * @throws NotUniqueException
      */
-    public function addChildRoleToRole(Role $parentRole, Role $childRole)
+    public function addChildRole(Role $parentRole, Role $childRole)
     {
         $roleHierarchy = new RoleHierarchy();
 
@@ -137,11 +163,11 @@ class AuthManager extends BaseComponent
 
     /**
      * Assign role to user
-     * @param integer $userId
      * @param Role $role
+     * @param integer $userId
      * @throws NotUniqueException
      */
-    public function assignRoleToUser($userId, Role $role)
+    public function assign(Role $role, $userId)
     {
         $userRole = new UserRole();
 

@@ -35,7 +35,7 @@
   },
   "autoload-dev": {
     "psr-4": {
-      "Potievdev\\SlimRbac\\": "tests"
+      "Tests\\Unit\\": "tests/unit"
     }
   },
   "bin": ["bin/slim-rbac"]

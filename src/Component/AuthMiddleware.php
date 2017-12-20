@@ -15,48 +15,6 @@ use \Psr\Http\Message\ResponseInterface;
 class AuthMiddleware extends BaseComponent
 {
     /**
-     * Checks access status
-     * @param integer $userId
-     * @param string $permissionName
-     * @return bool
-     * @throws \Exception
-     */
-    public function checkAccess($userId, $permissionName)
-    {
-        if (ValidatorHelper::isInteger($userId) == false) {
-            throw new InvalidArgumentException('User identifier must be number.');
-        }
-
-        /** @var integer $permissionId */
-        $permissionId = $this->repositoryRegistry
-            ->getPermissionRepository()
-            ->getPermissionIdByName($permissionName);
-
-        if (ValidatorHelper::isInteger($permissionId)) {
-
-            /** @var integer[] $rootRoleIds */
-            $rootRoleIds = $this->repositoryRegistry
-                ->getUserRoleRepository()
-                ->getUserRoleIds($userId);
-
-            // If user has not assigned roles
-            if (count($rootRoleIds) == 0)
-                return false;
-
-            /** @var integer[] $allRoleIds */
-            $allRoleIds = $this->repositoryRegistry
-                ->getRoleHierarchyRepository()
-                ->getAllRoleIdsHierarchy($rootRoleIds);
-
-            return $this->repositoryRegistry
-                ->getRolePermissionRepository()
-                ->isPermissionAssigned($permissionId, $allRoleIds);
-        }
-
-        return false;
-    }
-
-    /**
      * Check access
      * @param  ServerRequestInterface                   $request  PSR7 request
      * @param  ResponseInterface                        $response PSR7 response
@@ -84,5 +42,4 @@ class AuthMiddleware extends BaseComponent
 
         return $response;
     }
-
 }
