@@ -11,7 +11,7 @@ use Symfony\Component\Console\Output\OutputInterface;
  * Class BaseCommand
  * @package Potievdev\SlimRbac\Command
  */
-class BaseCommand extends Command
+class BaseDatabaseCommand extends Command
 {
     /** Default environment name */
     const DEFAULT_ENVIRONMENT_NAME = 'rb';

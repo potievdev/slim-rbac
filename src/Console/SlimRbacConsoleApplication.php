@@ -20,8 +20,9 @@ class SlimRbacConsoleApplication extends Application
         parent::__construct('https://github.com/potievdev/slim-rbac?v=' . $version);
 
         $this->addCommands([
-            new Command\MigrateCommand(),
-            new Command\RollbackCommand(),
+            new Command\CreateConfigCommand(),
+            new Command\MigrateDatabaseCommand(),
+            new Command\RollbackDatabaseCommand(),
         ]);
     }
 

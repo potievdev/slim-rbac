@@ -8,19 +8,19 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Phinx\Migration\Manager;
 
 /**
- * Class RollbackCommand
+ * Class MigrateCommand
  * @package Potievdev\SlimRbac\Command
  */
-class RollbackCommand extends BaseCommand
+class MigrateDatabaseCommand extends BaseDatabaseCommand
 {
     public function configure()
     {
         $this
-            ->setName('rollback')
-            ->setDescription('Rollback last migration to database')
+            ->setName('migrate')
+            ->setDescription('Applies migrations to database')
             ->setDefinition([
                 new InputOption('--config', '-c', InputOption::VALUE_OPTIONAL, 'Path for file which initialized connection to db and return it in helper set component')
-            ]);;
+            ]);
     }
 
     /**
@@ -32,6 +32,6 @@ class RollbackCommand extends BaseCommand
     {
         parent::execute($input, $output);
         $manager = new Manager($this->config, $input, $output);
-        $manager->rollback($this->config->getDefaultEnvironment());
+        $manager->migrate($this->config->getDefaultEnvironment());
     }
 }
