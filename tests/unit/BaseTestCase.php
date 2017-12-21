@@ -37,12 +37,7 @@ class BaseTestCase extends \PHPUnit_Framework_TestCase
      */
     public function setUp()
     {
-        $helperSet = require __DIR__ . '/../../config/cli-config.php';
-
-        /** @var \Doctrine\ORM\Tools\Console\Helper\EntityManagerHelper $entityManagerHelper */
-        $entityManagerHelper = $helperSet->get('em');
-
-        $this->entityManager = $entityManagerHelper->getEntityManager();
+        $this->entityManager = require __DIR__ . '/../../config/sr-config.php';
 
         $this->repositoryRegistry = new RepositoryRegistry($this->entityManager);
 

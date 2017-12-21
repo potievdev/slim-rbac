@@ -37,16 +37,17 @@ class BaseCommand extends Command
     private function getCliPath(InputInterface $input)
     {
 
-        $cliConfigPaths = [
-            __DIR__ . '/../../../../../../cli-config.php',
-            __DIR__ . '/../../../../../../config/cli-config.php',
+        $filePaths = [
+            __DIR__ . '/../../../config/sr-config.php',
+            __DIR__ . '/../../../../../../sr-config.php',
+            __DIR__ . '/../../../../../../config/sr-config.php',
         ];
 
-        if ($input->hasOption('cli-path')) {
-            $cliConfigPaths[] = $input->getOption('cli-path');
+        if ($input->hasOption('config')) {
+            $filePaths[] = $input->getOption('config');
         }
 
-        foreach ($cliConfigPaths as $path) {
+        foreach ($filePaths as $path) {
             if (is_file($path)) {
                 return $path;
             }
@@ -54,20 +55,17 @@ class BaseCommand extends Command
 
         throw new \Exception(
             'There is not found config file.' . PHP_EOL .
-            'You can pass path to file as option:  --cli-path=FILE_PATH'
+            'You can pass path to file as option: -c FILE_PATH'
         );
     }
 
     public function execute(InputInterface $input, OutputInterface $output)
     {
-        /** @var \Symfony\Component\Console\Helper\HelperSet $helperSet */
-        $helperSet = require $this->getCliPath($input);
-
-        /** @var \Doctrine\DBAL\Tools\Console\Helper\ConnectionHelper $connectionHelper */
-        $connectionHelper = $helperSet->get('db');
+        /** @var \Doctrine\ORM\EntityManager $entityManager */
+        $entityManager = require $this->getCliPath($input);
 
         /** @var \Doctrine\DBAL\Connection $connection */
-        $connection = $connectionHelper->getConnection();
+        $connection = $entityManager->getConnection();
 
         $paths['migrations'] = __DIR__ . '/../../migrations';
 

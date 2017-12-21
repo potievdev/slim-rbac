@@ -19,7 +19,7 @@ class MigrateCommand extends BaseCommand
             ->setName('migrate')
             ->setDescription('Applies migrations to database')
             ->setDefinition([
-                new InputOption('--cli-path', '-c', InputOption::VALUE_OPTIONAL, 'Path for file which initialized connection to db and return it in helper set component')
+                new InputOption('--config', '-c', InputOption::VALUE_OPTIONAL, 'Path for file which initialized connection to db and return it in helper set component')
             ]);
     }
 
