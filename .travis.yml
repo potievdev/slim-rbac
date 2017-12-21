@@ -8,7 +8,7 @@ services:
 
 before_install:
   - mysql -e 'CREATE DATABASE IF NOT EXISTS test;'
-  - cp config/config.example.php config/config.php
+  - cp config/sr-config.example.php config/sr-config.php
   - composer update
 
 language: php
@@ -16,7 +16,7 @@ php:
   - '5.4'
 
 script:
-  - ./bin/slim-rbac migrate --cli-path=config/cli-config.php
+  - ./bin/slim-rbac migrate -c config/sr-config.php
   - vendor/bin/codecept  run --coverage --coverage-xml
   - cp tests/_output/coverage.xml ./coverage.xml
   - cp tests/_output/coverage.serialized ./coverage.serialized
