@@ -1,9 +1,12 @@
 <?php
 
+/**
+ * If you not include vendor/autoload.php before, remove comment tags.
+ * require_once __DIR__ .'/vendor/autoload.php';
+ */
+
 use Doctrine\ORM\Tools\Setup;
 use Doctrine\ORM\EntityManager;
-
-$paths = [__DIR__ . '/../src/models/entity'];
 
 $dbParams = [
     'driver'   => 'pdo_mysql',
@@ -14,6 +17,6 @@ $dbParams = [
     'port'     => 3306
 ];
 
-$config = Setup::createAnnotationMetadataConfiguration($paths, false, null, null, false);
+$config = Setup::createAnnotationMetadataConfiguration([], false, null, null, false);
 
 return EntityManager::create($dbParams, $config);
