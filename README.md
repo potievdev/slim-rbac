@@ -1,5 +1,7 @@
 # Slim3 RBAC Middleware
 
+[![Build Status](https://travis-ci.org/potievdev/slim-rbac.svg?branch=master)](https://travis-ci.org/potievdev/slim-rbac)
+[![codecov](https://codecov.io/gh/potievdev/slim-rbac/branch/master/graph/badge.svg)](https://codecov.io/gh/potievdev/slim-rbac)
 
 This package helps you to release access control logic via [RBAC](https://en.wikipedia.org/wiki/Role-based_access_control) (Role Based Access Control) technology.
 
@@ -62,9 +64,8 @@ Configure database connections params and run applying migrations command
 $ vendor/bin/slim-rbac migrate
 ```
 If all OK you must see similar screen
-<p align="center">
-    <img src="https://yadi.sk/i/_FCfUL5J3QsQC7" alt="Slim RBAC migrations applying screenshot" />
-</p>
+
+![alt text](https://3.downloader.disk.yandex.ru/disk/782e11e8921bcfee4ea27a72435df7daed1143be642dc7d16f0e56f551e82c71/5a3db17f/YDaZG483KqpGyRGM7PeuU7xeykrU0TVIUy_eD6Cnj68YRmNeDwNIGK0sEtC9132Xv_8Lm7GO59c_KhyTJ4s3Cw%3D%3D?uid=0&filename=2017-12-23_00-12-42.png&disposition=inline&hash=&limit=0&content_type=image%2Fpng&fsize=14626&hid=f6d1fe369a897a4c23f44ef036e2d5a6&media_type=image&tknv=v2&etag=3d96d11be88f0d4c592264e02c6ccb50)
 
 ## How to use
 ___
