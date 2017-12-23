@@ -14,6 +14,9 @@ use Potievdev\SlimRbac\Structure\AuthOptions;
  */
 class BaseComponent
 {
+    /** @var  AuthOptions $authOptions */
+    protected $authOptions;
+
     /** @var  EntityManager $entityManager */
     protected $entityManager;
 
@@ -22,11 +25,12 @@ class BaseComponent
 
     /**
      * AuthManager constructor.
-     * @param AuthOptions $options
+     * @param AuthOptions $authOptions
      */
-    public function __construct(AuthOptions $options)
+    public function __construct(AuthOptions $authOptions)
     {
-        $this->entityManager = $options->getEntityManager();
+        $this->authOptions = $authOptions;
+        $this->entityManager = $authOptions->getEntityManager();
         $this->repositoryRegistry = new RepositoryRegistry($this->entityManager);
     }
 

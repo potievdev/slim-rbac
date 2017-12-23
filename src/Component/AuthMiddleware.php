@@ -2,6 +2,7 @@
 
 namespace Potievdev\SlimRbac\Component;
 
+use Potievdev\SlimRbac\Structure\AuthOptions;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
@@ -22,8 +23,25 @@ class AuthMiddleware extends BaseComponent
      */
     public function __invoke($request, $response, $next)
     {
+        $variableName = $this->authOptions->getVariableName();
+        $storageType = $this->authOptions->getVariableStorageType();
+
         /** @var integer $userId */
-        $userId = $request->getAttribute('userId');
+        switch ($storageType) {
+
+            case AuthOptions::ATTRIBUTE_STORAGE_TYPE:
+                $userId = $request->getAttribute($variableName);
+                break;
+
+            case AuthOptions::HEADER_STORAGE_TYPE:
+                $userId = $request->getHeaderLine($variableName);
+                break;
+
+            case AuthOptions::COOKIE_STORAGE_TYPE:
+                $params = $request->getCookieParams();
+                $userId = $params[$variableName];
+                break;
+        }
 
         /** @var string $permissionName */
         $permissionName = $request->getUri()->getPath();

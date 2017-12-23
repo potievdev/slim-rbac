@@ -6,35 +6,49 @@
 This package helps you to release access control logic via [RBAC](https://en.wikipedia.org/wiki/Role-based_access_control) (Role Based Access Control) technology.
 
 ## Requirements
-___
+---
+
 - The minimum required PHP version is PHP 5.4.
 
 ## Installation
-___
+---
+
 ### First step
-Run next command.
+
 ```sh
 $ composer require potievdev/slim-rbac "^1.0"
 ```
+
 ### Second step
-After installing packages, you should apply database migrations for creating necessary tables. There are two ways dependently from you use or not use Doctrine2 ORM in your project.
+
+After installing packages, you should apply database migrations for creating necessary tables. 
+There are two cases dependency from your project uses or not uses Doctrine 2 ORM.
 
 ##### If you use  Doctrine2
+
 1. Create a php file, which returns instance of EntityManager.
+
 ```php
 ...
 return $entityManager;
 ```
+
 2. Run applying migrations command
+
 ```sh
 $ vendor/bin/slim-rbac migrate -c PATH_TO_ENTITY_MANAGER_FILE
 ```
+
 #### Else
+
 1. Run next command in root directory or in directory where save configuration files of project
+
 ```sh
 $ vendor/bin/slim-rbac create
 ```
+
 Command creates the `sr-config.php` file with next content
+
 ```php
 <?php
 
@@ -59,22 +73,88 @@ $config = Setup::createAnnotationMetadataConfiguration([], false, null, null, fa
 
 return EntityManager::create($dbParams, $config);
 ```
+
 Configure database connections params and run applying migrations command
+
 ```sh
 $ vendor/bin/slim-rbac migrate
 ```
+
 If all OK you must see similar screen
 
 ![alt text](https://3.downloader.disk.yandex.ru/disk/782e11e8921bcfee4ea27a72435df7daed1143be642dc7d16f0e56f551e82c71/5a3db17f/YDaZG483KqpGyRGM7PeuU7xeykrU0TVIUy_eD6Cnj68YRmNeDwNIGK0sEtC9132Xv_8Lm7GO59c_KhyTJ4s3Cw%3D%3D?uid=0&filename=2017-12-23_00-12-42.png&disposition=inline&hash=&limit=0&content_type=image%2Fpng&fsize=14626&hid=f6d1fe369a897a4c23f44ef036e2d5a6&media_type=image&tknv=v2&etag=3d96d11be88f0d4c592264e02c6ccb50)
 
 ## How to use
-___
+---
+
+There are tree major components
+
+- `AuthOptions` - component for saving configurations
+- `AuthManager` - component for managing roles and permissions
+- `AuthMiddleware` - Slim3 middleware component
+
+### How initialize middleware 
+
+1. Create AuthOptions instance and configure it 
+
+```php
+
+$authOptions = new AuthOptions();
+// Setting entity manager instance
+$authOptions->setEntityManager($entityManager);
+
+```
+2. Adding middleware
+
+```php
+// $app is instance of Slim application
+$app->add(new AuthMiddleware($authOptions));
+```
+### How initialize manager
+ 1. Create AuthOptions instance and configure it 
+ 
+ ```php
+ 
+ $authOptions = new AuthOptions();
+ // Setting entity manager instance
+ $authOptions->setEntityManager($entityManager);
+ 
+ ```
+ 2. Create manager instance
+ 
+ ```php
+$authManager = new AuthManager($this->authOptions);
+ ```
+ 
+Simple example
+ ```php
+ // Creating edit permission
+        $edit = $this->authManager->createPermission('edit');
+        $this->authManager->addPermission($edit);
+// Creating write permission
+        $write = $this->authManager->createPermission('write');
+        $this->authManager->addPermission($write);
+// Creating moderator role
+        $moderator = $this->authManager->createRole('moderator');
+        $this->authManager->addRole($moderator);
+// Creating admin role
+        $admin = $this->authManager->createRole('admin');
+        $this->authManager->addRole($admin);
+// Adding permissions to roles
+        $this->authManager->addChildPermission($moderator, $edit);
+        $this->authManager->addChildPermission($admin, $write);
+// Adding child role to role
+        $this->authManager->addChildRole($admin, $moderator);
+// Assigning roles to users
+        $this->authManager->assign($moderator, 1);
+        $this->authManager->assign($admin, 2);
+ ```
 
 ## Contribution
-___
+---
 
 ## Licience
-___
+---
 MIT License
 
 Copyright (c) 2017 ABDULMALIK ABDULPOTIEV
@@ -96,4 +176,3 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
-
