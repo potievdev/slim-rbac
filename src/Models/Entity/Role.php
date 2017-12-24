@@ -51,6 +51,13 @@ class Role
     private $updatedAt;
 
     /**
+     * @var string
+     *
+     * @ORM\Column(name="description", type="string", nullable=true)
+     */
+    private $description;
+
+    /**
      * @return int
      */
     public function getId()
@@ -128,6 +135,22 @@ class Role
     public function setUpdatedAt($updatedAt)
     {
         $this->updatedAt = $updatedAt;
+    }
+
+    /**
+     * @return string
+     */
+    public function getDescription()
+    {
+        return $this->description;
+    }
+
+    /**
+     * @param string $description
+     */
+    public function setDescription($description)
+    {
+        $this->description = $description;
     }
 
     /** @ORM\PrePersist */
