@@ -4,5 +4,8 @@ vendor/*
 # Exclude PhpStorm files
 .idea
 
+# Exclude Phinx settings
+phinx.yml
+
 # Exclude configurations file
 config/sr-config.php
