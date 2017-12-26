@@ -6,7 +6,9 @@
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/potievdev/slim-rbac/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/potievdev/slim-rbac/?branch=master)
 [![Build Status](https://scrutinizer-ci.com/g/potievdev/slim-rbac/badges/build.png?b=master)](https://scrutinizer-ci.com/g/potievdev/slim-rbac/build-status/master)
 
-This package helps you to release access control logic via [RBAC](https://en.wikipedia.org/wiki/Role-based_access_control) (Role Based Access Control) technology.
+
+
+This package helps you to release access control logic via [RBAC](https://en.wikipedia.org/wiki/Role-based_access_control) (Role Based Access Control) technology. The example app you can see [https://github.com/potievdev/slim-rbac-app](https://github.com/potievdev/slim-rbac-app)
 
 ## Requirements
 ---
@@ -96,7 +98,24 @@ There are tree major components
 - `AuthManager` - component for managing roles and permissions
 - `AuthMiddleware` - Slim3 middleware component
 
-### How initialize middleware 
+### About AuthOptions
+Saves configuration values for AuthMiddleware and AuthManager
+- `setEntityManager` - sets entityManager instance
+- `setsetVariableStorageType` - sets where save information about user. Default value: `AuthOptions::ATTRIBUTE_STORAGE_TYPE` values saved in request attributes.
+- `setVariableName` - sets variable name. Default value: `AuthOptions::DEFAULT_VARIABLE_NAME`
+
+### About AuthMiddleware
+AuthMiddleware only checks permissions. By default the permission name is same with uri path
+
+```php
+$permissionName = $request->getUri()->getPath();
+```
+For url `https://example.com/write` permission name is `/write`  
+
+When permission denied, middleware returns response with code `403`
+
+
+### How initialize AuthMiddleware 
 
 1. Create AuthOptions instance and configure it 
 
@@ -113,7 +132,8 @@ $authOptions->setEntityManager($entityManager);
 // $app is instance of Slim application
 $app->add(new AuthMiddleware($authOptions));
 ```
-### How initialize manager
+
+### How initialize  AuthManager
  1. Create AuthOptions instance and configure it 
  
  ```php
@@ -131,23 +151,32 @@ $authManager = new AuthManager($this->authOptions);
  
 Simple example
  ```php
+
  // Creating edit permission
-        $edit = $this->authManager->createPermission('edit');
+        $edit = $this->authManager->createPermission('/edit');
+        $edit->setDescription('This is edit permission'); // Optional
         $this->authManager->addPermission($edit);
+
 // Creating write permission
-        $write = $this->authManager->createPermission('write');
+        $write = $this->authManager->createPermission('/write');
         $this->authManager->addPermission($write);
+
 // Creating moderator role
         $moderator = $this->authManager->createRole('moderator');
+        $moderator->setDescription('This is moderator role'); // Optional
         $this->authManager->addRole($moderator);
+
 // Creating admin role
         $admin = $this->authManager->createRole('admin');
         $this->authManager->addRole($admin);
+
 // Adding permissions to roles
         $this->authManager->addChildPermission($moderator, $edit);
         $this->authManager->addChildPermission($admin, $write);
+
 // Adding child role to role
         $this->authManager->addChildRole($admin, $moderator);
+
 // Assigning roles to users
         $this->authManager->assign($moderator, 1);
         $this->authManager->assign($admin, 2);
@@ -156,7 +185,7 @@ Simple example
 ## Contribution
 ---
 
-## Licience
+## Licence
 ---
 MIT License
 
