@@ -2,13 +2,11 @@
     <h1> Slim3 RBAC Middleware </h1>
 </div>
 
-<div align="center">
 [![Build Status](https://travis-ci.org/potievdev/slim-rbac.svg?branch=master)](https://travis-ci.org/potievdev/slim-rbac)
 [![codecov](https://codecov.io/gh/potievdev/slim-rbac/branch/master/graph/badge.svg)](https://codecov.io/gh/potievdev/slim-rbac)
 [![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fpotievdev%2Fslim-rbac.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2Fpotievdev%2Fslim-rbac?ref=badge_shield)
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/potievdev/slim-rbac/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/potievdev/slim-rbac/?branch=master)
 [![Build Status](https://scrutinizer-ci.com/g/potievdev/slim-rbac/badges/build.png?b=master)](https://scrutinizer-ci.com/g/potievdev/slim-rbac/build-status/master)
-</div>
 
 This package helps you to release access control logic via [RBAC](https://en.wikipedia.org/wiki/Role-based_access_control) (Role Based Access Control) technology. The example app you can see [https://github.com/potievdev/slim-rbac-app](https://github.com/potievdev/slim-rbac-app)
 
