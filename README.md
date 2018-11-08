@@ -7,6 +7,7 @@
 [![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fpotievdev%2Fslim-rbac.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2Fpotievdev%2Fslim-rbac?ref=badge_shield)
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/potievdev/slim-rbac/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/potievdev/slim-rbac/?branch=master)
 [![Build Status](https://scrutinizer-ci.com/g/potievdev/slim-rbac/badges/build.png?b=master)](https://scrutinizer-ci.com/g/potievdev/slim-rbac/build-status/master)
+[![Total Downloads](https://poser.pugx.org/potievdev/slim-rbac/downloads)](https://packagist.org/packages/potievdev/slim-rbac)
 
 This package helps you to release access control logic via [RBAC](https://en.wikipedia.org/wiki/Role-based_access_control) (Role Based Access Control) technology. The example app you can see [https://github.com/potievdev/slim-rbac-app](https://github.com/potievdev/slim-rbac-app)
 
@@ -101,15 +102,16 @@ There are tree major components
 Saves configuration values for AuthMiddleware and AuthManager
 - `setEntityManager` - sets EntityManager instance
 - `setVariableStorageType` - sets where we will save current user identifier.
+In below given table you can see list of storage types
+- `setVariableName` - sets field name, where we save current user identifier.
+Default value: `AuthOptions::DEFAULT_VARIABLE_NAME` which equals to `userId`
 
 | Storage Type | Description | Default |
 | ------------ | ----------- | ------- |
-| `AuthOptions::ATTRIBUTE_STORAGE_TYPE` | In this case middleware gets user id from attributes | Yes |
-| `AuthOptions::HEADER_STORAGE_TYPE` | In this case middleware gets user id from header | No |
-| `AuthOptions::COOKIE_STORAGE_TYPE` | In this case middleware gets user id cookie | No |
+| `AuthOptions::ATTRIBUTE_STORAGE_TYPE` | Middleware gets user id from attributes | Yes |
+| `AuthOptions::HEADER_STORAGE_TYPE` | Middleware gets user id from header | No |
+| `AuthOptions::COOKIE_STORAGE_TYPE` | Middleware gets user id cookie | No |
 
-- `setVariableName` - sets field name, where we save current user identifier.
-Default value: `AuthOptions::DEFAULT_VARIABLE_NAME` which equals to `userId`
 
 ### About AuthMiddleware
 AuthMiddleware only checks permissions.
