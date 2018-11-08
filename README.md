@@ -25,13 +25,15 @@ $ composer require potievdev/slim-rbac "^1.0"
 
 ### Second step
 
-After installing packages, you should apply database migrations for creating necessary tables. 
-There are two cases dependency from your project uses or not uses Doctrine 2 ORM.
+After installing packages, you should apply database migrations for
+creating necessary tables. There are two cases dependency from your
+project uses or not uses Doctrine 2 ORM.
 
 
 ##### If you use  Doctrine2
 
-Create a php file with name `sr-config.php` in root directory of project, which returns instance of EntityManager.
+Create a php file with name `sr-config.php` in root directory of project,
+ which returns instance of EntityManager.
 
 ```php
 <?php
@@ -41,7 +43,8 @@ return EntityManager::getInstance();
 
 #### Else
 
-Run next command in root directory or in directory where save configuration files of project
+Run next command in root directory or in directory where save
+configuration files of project
 
 ```sh
 $ vendor/bin/slim-rbac create
@@ -83,25 +86,34 @@ After configuration database connection, run next command for applying database 
 $ vendor/bin/slim-rbac migrate
 ```
 
-If all OK you must see similar text
+If all `OK` you must see list of applied migrations, which prints `phinx`
 
 
 ## :hammer: How to use
 
 There are tree major components
 
-- `AuthOptions` - component for saving configurations
+- `AuthOptions` - context for saving configurations
 - `AuthManager` - component for managing roles and permissions
-- `AuthMiddleware` - Slim3 middleware component
+- `AuthMiddleware` - Slim3 middleware
 
 ### About AuthOptions
 Saves configuration values for AuthMiddleware and AuthManager
-- `setEntityManager` - sets entityManager instance
-- `setsetVariableStorageType` - sets where save information about user. Default value: `AuthOptions::ATTRIBUTE_STORAGE_TYPE` values saved in request attributes.
-- `setVariableName` - sets variable name. Default value: `AuthOptions::DEFAULT_VARIABLE_NAME`
+- `setEntityManager` - sets EntityManager instance
+- `setVariableStorageType` - sets where we will save current user identifier.
+
+| Storage Type | Description | Default |
+| ------------ | ----------- | ------- |
+| `AuthOptions::ATTRIBUTE_STORAGE_TYPE` | In this case middleware gets user id from attributes | Yes |
+| `AuthOptions::HEADER_STORAGE_TYPE` | In this case middleware gets user id from header | No |
+| `AuthOptions::COOKIE_STORAGE_TYPE` | In this case middleware gets user id cookie | No |
+
+- `setVariableName` - sets field name, where we save current user identifier.
+Default value: `AuthOptions::DEFAULT_VARIABLE_NAME` which equals to `userId`
 
 ### About AuthMiddleware
-AuthMiddleware only checks permissions. By default the permission name is same with uri path
+AuthMiddleware only checks permissions.
+By default the permission name is same with uri path
 
 ```php
 $permissionName = $request->getUri()->getPath();
@@ -179,8 +191,9 @@ Simple example
  ```
 
 ## :crossed_flags: Contribution
+Please see [CONTRIBUTING](CONTRIBUTING.md) for details.
 
 ## :memo: Licence
 MIT License
 
-Copyright (c) 2017 ABDULMALIK ABDULPOTIEV
+Copyright (c) 2018 ABDULMALIK ABDULPOTIEV
