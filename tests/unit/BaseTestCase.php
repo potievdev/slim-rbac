@@ -2,8 +2,6 @@
 
 namespace Tests\Unit;
 
-use Potievdev\SlimRbac\Component\AuthManager;
-use Potievdev\SlimRbac\Component\AuthMiddleware;
 use Potievdev\SlimRbac\Models\RepositoryRegistry;
 use Potievdev\SlimRbac\Structure\AuthOptions;
 
@@ -23,18 +21,16 @@ class BaseTestCase extends \PHPUnit_Framework_TestCase
     /** @var \Doctrine\ORM\EntityManager $entityManager */
     protected $entityManager;
 
-    /** @var RepositoryRegistry $entityManager */
-    protected $repositoryRegistry;
-
     /** @var AuthOptions $authOptions */
     protected $authOptions;
 
-    /** @var  AuthManager $authManager */
-    protected $authManager;
-
-    /** @var  AuthMiddleware $authMiddleware */
-    protected $authMiddleware;
-
+    /**
+     * @return RepositoryRegistry
+     */
+    protected function createRepositoryRegistry()
+    {
+        return new RepositoryRegistry($this->entityManager);
+    }
 
     /**
      * Initializing AuthOptions, AuthManager and AuthOptions
@@ -43,16 +39,8 @@ class BaseTestCase extends \PHPUnit_Framework_TestCase
     {
         $this->entityManager = require __DIR__ . '/../../config/sr-config.php';
 
-        $this->repositoryRegistry = new RepositoryRegistry($this->entityManager);
-
         $this->authOptions = new AuthOptions();
 
         $this->authOptions->setEntityManager($this->entityManager);
-
-        $this->authMiddleware = new AuthMiddleware($this->authOptions);
-
-        $this->authManager = new AuthManager($this->authOptions);
-
-        $this->authManager->removeAll();
     }
 }

@@ -24,6 +24,7 @@ class AuthManager extends BaseComponent
      * @param integer $parentRoleId
      * @param integer $childRoleId
      * @throws CyclicException
+     * @throws \Doctrine\ORM\Query\QueryException
      */
     private function checkForCyclicHierarchy($parentRoleId, $childRoleId)
     {
@@ -147,6 +148,7 @@ class AuthManager extends BaseComponent
      * @throws CyclicException
      * @throws DatabaseException
      * @throws NotUniqueException
+     * @throws \Doctrine\ORM\Query\QueryException
      */
     public function addChildRole(Role $parentRole, Role $childRole)
     {

@@ -10,6 +10,9 @@ use Potievdev\SlimRbac\Structure\AuthOptions;
  */
 class AuthOptionsTest extends \PHPUnit_Framework_TestCase
 {
+    /**
+     * Testing AuthOptionsComponent
+     */
     public function testAuthOptions()
     {
         $authOptions = new AuthOptions();

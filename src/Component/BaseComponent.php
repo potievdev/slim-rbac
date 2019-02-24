@@ -2,7 +2,6 @@
 
 namespace Potievdev\SlimRbac\Component;
 
-use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\OptimisticLockException;
 use Potievdev\SlimRbac\Exception\DatabaseException;
@@ -42,7 +41,6 @@ class BaseComponent
      * @param  object $entity
      * @return object
      * @throws DatabaseException
-     * @throws UniqueConstraintViolationException
      */
     protected function saveEntity($entity)
     {
@@ -60,7 +58,8 @@ class BaseComponent
      * @param integer $userId
      * @param string $permissionName
      * @return bool
-     * @throws \Exception
+     * @throws InvalidArgumentException
+     * @throws \Doctrine\ORM\Query\QueryException
      */
     public function checkAccess($userId, $permissionName)
     {

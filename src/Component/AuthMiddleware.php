@@ -20,7 +20,8 @@ class AuthMiddleware extends BaseComponent
      * @param  callable $next Next middleware
      *
      * @return \Psr\Http\Message\ResponseInterface
-     * @throws \Exception
+     * @throws \Doctrine\ORM\Query\QueryException
+     * @throws \Potievdev\SlimRbac\Exception\InvalidArgumentException
      */
     public function __invoke($request, $response, $next)
     {
