@@ -153,13 +153,17 @@ class Role
         $this->description = $description;
     }
 
-    /** @ORM\PrePersist */
+    /** @ORM\PrePersist
+     * @throws \Exception
+     */
     public function prePersist()
     {
         $this->createdAt = new \DateTime();
     }
 
-    /** @ORM\PreUpdate  */
+    /** @ORM\PreUpdate
+     * @throws \Exception
+     */
     public function preUpdate()
     {
         $this->updatedAt = new \DateTime();

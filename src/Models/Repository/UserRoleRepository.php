@@ -15,6 +15,7 @@ class UserRoleRepository extends EntityRepository
     /**
      * @param integer $userId
      * @return array
+     * @throws \Doctrine\ORM\Query\QueryException
      */
     public function getUserRoleIds($userId)
     {

@@ -7,6 +7,10 @@ use Potievdev\SlimRbac\Component\AuthMiddleware;
 use Potievdev\SlimRbac\Models\RepositoryRegistry;
 use Potievdev\SlimRbac\Structure\AuthOptions;
 
+/**
+ * Class BaseTestCase
+ * @package Tests\Unit
+ */
 class BaseTestCase extends \PHPUnit_Framework_TestCase
 {
     /** Moderator user identifier */

@@ -127,7 +127,9 @@ class RoleHierarchy
         $this->parentRole = $parentRole;
     }
 
-    /** @ORM\PrePersist */
+    /** @ORM\PrePersist
+     * @throws \Exception
+     */
     public function prePersist()
     {
         $this->createdAt = new \DateTime();

@@ -3,7 +3,7 @@
 namespace Potievdev\SlimRbac\Exception;
 
 /**
- * This throws when cyclic line detected
+ * This throws when cyclic line detected in roles hierarchy
  * Class CyclicException
  * @package Potievdev\SlimRbac\Exception
  */

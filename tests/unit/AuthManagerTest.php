@@ -5,6 +5,10 @@ namespace Tests\Unit;
 use Potievdev\SlimRbac\Models\Entity\Permission;
 use Potievdev\SlimRbac\Models\Entity\Role;
 
+/**
+ * Class AuthManagerTest
+ * @package Tests\Unit
+ */
 class AuthManagerTest extends BaseTestCase
 {
     /**

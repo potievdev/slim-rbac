@@ -133,7 +133,9 @@ class UserRole
         $this->role = $role;
     }
 
-    /** @ORM\PrePersist */
+    /** @ORM\PrePersist
+     * @throws \Exception
+     */
     public function prePersist()
     {
         $this->createdAt = new \DateTime();
