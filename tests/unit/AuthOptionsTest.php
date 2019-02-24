@@ -8,14 +8,14 @@ use Potievdev\SlimRbac\Structure\AuthOptions;
  * Class AuthOptionsTest
  * @package Tests\Unit
  */
-class AuthOptionsTest extends \PHPUnit_Framework_TestCase
+class AuthOptionsTest extends BaseTestCase
 {
     /**
      * Testing AuthOptionsComponent
      */
-    public function testAuthOptions()
+    public function testCheckSetAndGetMethods()
     {
-        $authOptions = new AuthOptions();
+        $authOptions = $this->createAuthOptions();
 
         $this->assertEquals(AuthOptions::DEFAULT_VARIABLE_NAME, $authOptions->getVariableName());
         $this->assertEquals(AuthOptions::ATTRIBUTE_STORAGE_TYPE, $authOptions->getVariableStorageType());

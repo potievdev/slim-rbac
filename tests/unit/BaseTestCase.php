@@ -19,10 +19,7 @@ class BaseTestCase extends \PHPUnit_Framework_TestCase
     const NOT_USER_ID = 3;
 
     /** @var \Doctrine\ORM\EntityManager $entityManager */
-    protected $entityManager;
-
-    /** @var AuthOptions $authOptions */
-    protected $authOptions;
+    private $entityManager;
 
     /**
      * @return RepositoryRegistry
@@ -33,14 +30,20 @@ class BaseTestCase extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * @return AuthOptions
+     */
+    protected function createAuthOptions()
+    {
+        $authOptions = new AuthOptions();
+        $authOptions->setEntityManager($this->entityManager);
+        return $authOptions;
+    }
+
+    /**
      * Initializing AuthOptions, AuthManager and AuthOptions
      */
     public function setUp()
     {
         $this->entityManager = require __DIR__ . '/../../config/sr-config.php';
-
-        $this->authOptions = new AuthOptions();
-
-        $this->authOptions->setEntityManager($this->entityManager);
     }
 }

@@ -16,6 +16,9 @@ use Potievdev\SlimRbac\Structure\AuthOptions;
  */
 class AuthMiddlewareTest extends BaseTestCase
 {
+    /** @var AuthOptions $authOptions */
+    protected $authOptions;
+
     /** @var callable $callable */
     protected $callable;
 
@@ -34,6 +37,8 @@ class AuthMiddlewareTest extends BaseTestCase
     public function setUp()
     {
         parent::setUp();
+
+        $this->authOptions = $this->createAuthOptions();
 
         $authManager = new AuthManager($this->authOptions);
         $authManager->removeAll();
@@ -72,7 +77,7 @@ class AuthMiddlewareTest extends BaseTestCase
      * @throws \Doctrine\ORM\Query\QueryException
      * @throws \Potievdev\SlimRbac\Exception\InvalidArgumentException
      */
-    public function testSuccessCase()
+    public function testCheckAccessSuccessCase()
     {
         $middleware = new AuthMiddleware($this->authOptions);
         $request = $this->request->withAttribute($this->authOptions->getVariableName(), self::ADMIN_USER_ID);
@@ -84,7 +89,7 @@ class AuthMiddlewareTest extends BaseTestCase
      * @throws \Doctrine\ORM\Query\QueryException
      * @throws \Potievdev\SlimRbac\Exception\InvalidArgumentException
      */
-    public function testFailureCase()
+    public function testCheckAccessDeniedCase()
     {
         $middleware = new AuthMiddleware($this->authOptions);
         $request = $this->request->withAttribute($this->authOptions->getVariableName(), self::MODERATOR_USER_ID);
@@ -96,7 +101,7 @@ class AuthMiddlewareTest extends BaseTestCase
      * @throws \Doctrine\ORM\Query\QueryException
      * @throws \Potievdev\SlimRbac\Exception\InvalidArgumentException
      */
-    public function testReadingUserIdFromHeader()
+    public function testCheckReadingUserIdFromHeader()
     {
         $authOptions = $this->authOptions;
         $authOptions->setVariableStorageType(AuthOptions::HEADER_STORAGE_TYPE);
@@ -110,7 +115,7 @@ class AuthMiddlewareTest extends BaseTestCase
      * @throws \Doctrine\ORM\Query\QueryException
      * @throws \Potievdev\SlimRbac\Exception\InvalidArgumentException
      */
-    public function testReadingUserIdFromCookie()
+    public function testCheckReadingUserIdFromCookie()
     {
         $authOptions = $this->authOptions;
         $authOptions->setVariableStorageType(AuthOptions::COOKIE_STORAGE_TYPE);

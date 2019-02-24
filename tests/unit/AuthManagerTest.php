@@ -26,7 +26,8 @@ class AuthManagerTest extends BaseTestCase
     {
         parent::setUp();
 
-        $this->authManager = new AuthManager($this->authOptions);
+        $authOptions = $this->createAuthOptions();
+        $this->authManager = new AuthManager($authOptions);
         $this->authManager->removeAll();
 
         $edit = $this->authManager->createPermission('edit');
@@ -49,16 +50,27 @@ class AuthManagerTest extends BaseTestCase
         $this->authManager->assign($admin, self::ADMIN_USER_ID);
     }
 
+    public function successCasesProvider()
+    {
+
+        return [
+            'moderator can edit' => [self::MODERATOR_USER_ID, 'edit'],
+            'admin can edit' => [self::ADMIN_USER_ID, 'edit'],
+            'admin can write' => [self::ADMIN_USER_ID, 'write'],
+        ];
+    }
+
     /**
      * Testing has permission cases
+     * @param integer $userId user id
+     * @param string $roleOrPermission role or permission name
      * @throws \Doctrine\ORM\Query\QueryException
      * @throws \Potievdev\SlimRbac\Exception\InvalidArgumentException
+     * @dataProvider successCasesProvider
      */
-    public function testAccessTrue()
+    public function testCheckAccessSuccessCases($userId, $roleOrPermission)
     {
-        $this->assertTrue($this->authManager->checkAccess(self::MODERATOR_USER_ID, 'edit'));
-        $this->assertTrue($this->authManager->checkAccess(self::ADMIN_USER_ID, 'edit'));
-        $this->assertTrue($this->authManager->checkAccess(self::ADMIN_USER_ID, 'write'));
+        $this->assertTrue($this->authManager->checkAccess($userId, $roleOrPermission));
     }
 
     /**
@@ -67,11 +79,10 @@ class AuthManagerTest extends BaseTestCase
     public function failCasesProvider()
     {
         return [
-            [self::MODERATOR_USER_ID, 'write'],
-            [self::ADMIN_USER_ID, 'none_permission'],
-            [self::NOT_USER_ID, 'edit'],
-            [self::NOT_USER_ID, 'admin'],
-            [self::NOT_USER_ID, 'moderator'],
+            'moderator has no write permission' => [self::MODERATOR_USER_ID, 'write'],
+            'not existing permission' => [self::ADMIN_USER_ID, 'none_permission'],
+            'not existing user id not has permission' => [self::NOT_USER_ID, 'edit'],
+            'not existing user id not has role' => [self::NOT_USER_ID, 'admin']
         ];
     }
 
@@ -83,7 +94,7 @@ class AuthManagerTest extends BaseTestCase
      * @throws \Potievdev\SlimRbac\Exception\InvalidArgumentException
      * @dataProvider failCasesProvider
      */
-    public function testAccessFalse($userId, $roleOrPermission)
+    public function testCheckAccessFailureCases($userId, $roleOrPermission)
     {
         $this->assertFalse($this->authManager->checkAccess($userId, $roleOrPermission));
     }
@@ -94,7 +105,7 @@ class AuthManagerTest extends BaseTestCase
      * @throws \Potievdev\SlimRbac\Exception\DatabaseException
      * @throws \Potievdev\SlimRbac\Exception\NotUniqueException
      */
-    public function testNotUniquePermission()
+    public function testCheckAddingNotUniquePermission()
     {
         $edit = $this->authManager->createPermission('edit');
         $this->authManager->addPermission($edit);
@@ -106,7 +117,7 @@ class AuthManagerTest extends BaseTestCase
      * @throws \Potievdev\SlimRbac\Exception\DatabaseException
      * @throws \Potievdev\SlimRbac\Exception\NotUniqueException
      */
-    public function testNonUniqueRole()
+    public function testCheckAddingNonUniqueRole()
     {
         $moderator = $this->authManager->createRole('moderator');
         $this->authManager->addRole($moderator);
@@ -119,7 +130,7 @@ class AuthManagerTest extends BaseTestCase
      * @throws \Potievdev\SlimRbac\Exception\NotUniqueException
      * @throws \Doctrine\ORM\Query\QueryException
      */
-    public function testCyclicException()
+    public function testCheckCyclicException()
     {
         $a = $this->authManager->createRole('a');
         $b = $this->authManager->createRole('b');
@@ -134,7 +145,7 @@ class AuthManagerTest extends BaseTestCase
     /**
      * Testing creating permission
      */
-    public function testCreatingPermission()
+    public function testCheckCreatingPermission()
     {
         $repositoryRegistry = $this->createRepositoryRegistry();
         $permission = $repositoryRegistry
@@ -147,7 +158,7 @@ class AuthManagerTest extends BaseTestCase
     /**
      * Testing creating role
      */
-    public function testCreatingRole()
+    public function testCheckCreatingRole()
     {
         $repositoryRegistry = $this->createRepositoryRegistry();
 
@@ -156,5 +167,51 @@ class AuthManagerTest extends BaseTestCase
             ->findOneBy(['name' => 'admin']);
 
         $this->assertTrue($role instanceof Role);
+    }
+
+    /**
+     * @throws \Potievdev\SlimRbac\Exception\DatabaseException
+     * @throws \Potievdev\SlimRbac\Exception\NotUniqueException
+     * @expectedException \Potievdev\SlimRbac\Exception\NotUniqueException
+     */
+    public function testCheckDoubleAssigningPermissionToSameRole()
+    {
+        $repositoryRegistry = $this->createRepositoryRegistry();
+
+        /** @var Role $role */
+        $role = $repositoryRegistry
+            ->getRoleRepository()
+            ->findOneBy(['name' => 'admin']);
+
+        /** @var Permission $permission */
+        $permission = $repositoryRegistry
+            ->getPermissionRepository()
+            ->findOneBy(['name' => 'write']);
+
+        $this->authManager->addChildPermission($role, $permission);
+    }
+
+    /**
+     * @throws \Doctrine\ORM\Query\QueryException
+     * @throws \Potievdev\SlimRbac\Exception\CyclicException
+     * @throws \Potievdev\SlimRbac\Exception\DatabaseException
+     * @throws \Potievdev\SlimRbac\Exception\NotUniqueException
+     * @expectedException \Potievdev\SlimRbac\Exception\NotUniqueException
+     */
+    public function testCheckAddingSameChildRoleDoubleTime()
+    {
+        $repositoryRegistry = $this->createRepositoryRegistry();
+
+        /** @var Role $parent */
+        $parent = $repositoryRegistry
+            ->getRoleRepository()
+            ->findOneBy(['name' => 'admin']);
+
+        /** @var Role $child */
+        $child = $repositoryRegistry
+            ->getRoleRepository()
+            ->findOneBy(['name' => 'moderator']);
+
+        $this->authManager->addChildRole($parent, $child);
     }
 }
