@@ -32,6 +32,7 @@ class SlimRbacConsoleApplication extends Application
      * @param InputInterface $input An Input instance
      * @param OutputInterface $output An Output instance
      * @return integer 0 if everything went fine, or an error code
+     * @throws \Throwable
      */
     public function doRun(InputInterface $input, OutputInterface $output)
     {

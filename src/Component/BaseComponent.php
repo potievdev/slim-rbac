@@ -3,6 +3,8 @@
 namespace Potievdev\SlimRbac\Component;
 
 use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\OptimisticLockException;
+use Potievdev\SlimRbac\Exception\DatabaseException;
 use Potievdev\SlimRbac\Exception\InvalidArgumentException;
 use Potievdev\SlimRbac\Helper\ValidatorHelper;
 use Potievdev\SlimRbac\Models\RepositoryRegistry;
@@ -35,11 +37,29 @@ class BaseComponent
     }
 
     /**
+     * Insert or update entity
+     * @param  object $entity
+     * @return object
+     * @throws DatabaseException
+     */
+    protected function saveEntity($entity)
+    {
+        try {
+            $this->entityManager->persist($entity);
+            $this->entityManager->flush($entity);
+            return $entity;
+        } catch (OptimisticLockException $e) {
+            throw new DatabaseException($e->getMessage());
+        }
+    }
+
+    /**
      * Checks access status
      * @param integer $userId
      * @param string $permissionName
      * @return bool
-     * @throws \Exception
+     * @throws InvalidArgumentException
+     * @throws \Doctrine\ORM\Query\QueryException
      */
     public function checkAccess($userId, $permissionName)
     {

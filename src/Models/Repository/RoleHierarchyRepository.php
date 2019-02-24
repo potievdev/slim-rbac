@@ -17,6 +17,7 @@ class RoleHierarchyRepository extends EntityRepository
      * Returns array of child role ids for given parent role ids
      * @param integer[] $parentIds
      * @return integer[]
+     * @throws \Doctrine\ORM\Query\QueryException
      */
     private function getChildIds($parentIds)
     {
@@ -36,6 +37,7 @@ class RoleHierarchyRepository extends EntityRepository
      * @param integer $parentRoleId
      * @param integer $findingChildId
      * @return bool
+     * @throws \Doctrine\ORM\Query\QueryException
      */
     public function hasChildRoleId($parentRoleId, $findingChildId)
     {
@@ -62,6 +64,7 @@ class RoleHierarchyRepository extends EntityRepository
      * Returns all child role ids for given parent role ids
      * @param integer[] $parentIds
      * @return integer[]
+     * @throws \Doctrine\ORM\Query\QueryException
      */
     private function getAllChildRoleIds($parentIds)
     {
@@ -78,6 +81,7 @@ class RoleHierarchyRepository extends EntityRepository
     /**
      * @param integer[] $rootRoleIds
      * @return integer[]
+     * @throws \Doctrine\ORM\Query\QueryException
      */
     public function getAllRoleIdsHierarchy($rootRoleIds)
     {

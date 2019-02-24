@@ -15,11 +15,13 @@ class AuthMiddleware extends BaseComponent
 {
     /**
      * Check access
-     * @param  ServerRequestInterface                   $request  PSR7 request
-     * @param  ResponseInterface                        $response PSR7 response
-     * @param  callable                                 $next     Next middleware
+     * @param  ServerRequestInterface $request PSR7 request
+     * @param  ResponseInterface $response PSR7 response
+     * @param  callable $next Next middleware
      *
      * @return \Psr\Http\Message\ResponseInterface
+     * @throws \Doctrine\ORM\Query\QueryException
+     * @throws \Potievdev\SlimRbac\Exception\InvalidArgumentException
      */
     public function __invoke($request, $response, $next)
     {
@@ -30,16 +32,16 @@ class AuthMiddleware extends BaseComponent
         switch ($storageType) {
 
             case AuthOptions::ATTRIBUTE_STORAGE_TYPE:
-                $userId = $request->getAttribute($variableName);
+                $userId = intval($request->getAttribute($variableName));
                 break;
 
             case AuthOptions::HEADER_STORAGE_TYPE:
-                $userId = $request->getHeaderLine($variableName);
+                $userId = intval($request->getHeaderLine($variableName));
                 break;
 
             case AuthOptions::COOKIE_STORAGE_TYPE:
                 $params = $request->getCookieParams();
-                $userId = $params[$variableName];
+                $userId = intval($params[$variableName]);
                 break;
         }
 
