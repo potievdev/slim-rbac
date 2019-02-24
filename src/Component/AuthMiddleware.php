@@ -32,16 +32,16 @@ class AuthMiddleware extends BaseComponent
         switch ($storageType) {
 
             case AuthOptions::ATTRIBUTE_STORAGE_TYPE:
-                $userId = $request->getAttribute($variableName);
+                $userId = intval($request->getAttribute($variableName));
                 break;
 
             case AuthOptions::HEADER_STORAGE_TYPE:
-                $userId = $request->getHeaderLine($variableName);
+                $userId = intval($request->getHeaderLine($variableName));
                 break;
 
             case AuthOptions::COOKIE_STORAGE_TYPE:
                 $params = $request->getCookieParams();
-                $userId = $params[$variableName];
+                $userId = intval($params[$variableName]);
                 break;
         }
 

@@ -7,6 +7,7 @@ use GuzzleHttp\Psr7\Response;
 use GuzzleHttp\Psr7\ServerRequest;
 use Potievdev\SlimRbac\Component\AuthManager;
 use Potievdev\SlimRbac\Component\AuthMiddleware;
+use Potievdev\SlimRbac\Structure\AuthOptions;
 
 /**
  * Class for testing AuthMiddleware
@@ -74,7 +75,7 @@ class AuthMiddlewareTest extends BaseTestCase
     public function testSuccessCase()
     {
         $middleware = new AuthMiddleware($this->authOptions);
-        $request = $this->request->withAttribute('userId', self::ADMIN_USER_ID);
+        $request = $this->request->withAttribute($this->authOptions->getVariableName(), self::ADMIN_USER_ID);
         $response = $middleware->__invoke($request, $this->response, $this->callable);
         $this->assertEquals(200, $response->getStatusCode());
     }
@@ -86,8 +87,37 @@ class AuthMiddlewareTest extends BaseTestCase
     public function testFailureCase()
     {
         $middleware = new AuthMiddleware($this->authOptions);
-        $request = $this->request->withAttribute('userId', self::MODERATOR_USER_ID);
+        $request = $this->request->withAttribute($this->authOptions->getVariableName(), self::MODERATOR_USER_ID);
         $response = $middleware->__invoke($request, $this->response, $this->callable);
         $this->assertEquals(403, $response->getStatusCode());
     }
+
+    /**
+     * @throws \Doctrine\ORM\Query\QueryException
+     * @throws \Potievdev\SlimRbac\Exception\InvalidArgumentException
+     */
+    public function testReadingUserIdFromHeader()
+    {
+        $authOptions = $this->authOptions;
+        $authOptions->setVariableStorageType(AuthOptions::HEADER_STORAGE_TYPE);
+        $middleware = new AuthMiddleware($authOptions);
+        $request = $this->request->withHeader($authOptions->getVariableName(), self::ADMIN_USER_ID);
+        $response = $middleware->__invoke($request, $this->response, $this->callable);
+        $this->assertEquals(200, $response->getStatusCode());
+    }
+
+    /**
+     * @throws \Doctrine\ORM\Query\QueryException
+     * @throws \Potievdev\SlimRbac\Exception\InvalidArgumentException
+     */
+    public function testReadingUserIdFromCookie()
+    {
+        $authOptions = $this->authOptions;
+        $authOptions->setVariableStorageType(AuthOptions::COOKIE_STORAGE_TYPE);
+        $middleware = new AuthMiddleware($authOptions);
+        $request = $this->request->withCookieParams([$authOptions->getVariableName() => self::ADMIN_USER_ID]);
+        $response = $middleware->__invoke($request, $this->response, $this->callable);
+        $this->assertEquals(200, $response->getStatusCode());
+    }
+
 }
