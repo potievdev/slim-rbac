@@ -15,11 +15,12 @@ class AuthMiddleware extends BaseComponent
 {
     /**
      * Check access
-     * @param  ServerRequestInterface                   $request  PSR7 request
-     * @param  ResponseInterface                        $response PSR7 response
-     * @param  callable                                 $next     Next middleware
+     * @param  ServerRequestInterface $request PSR7 request
+     * @param  ResponseInterface $response PSR7 response
+     * @param  callable $next Next middleware
      *
      * @return \Psr\Http\Message\ResponseInterface
+     * @throws \Exception
      */
     public function __invoke($request, $response, $next)
     {

@@ -2,7 +2,10 @@
 
 namespace Potievdev\SlimRbac\Component;
 
+use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\OptimisticLockException;
+use Potievdev\SlimRbac\Exception\DatabaseException;
 use Potievdev\SlimRbac\Exception\InvalidArgumentException;
 use Potievdev\SlimRbac\Helper\ValidatorHelper;
 use Potievdev\SlimRbac\Models\RepositoryRegistry;
@@ -32,6 +35,24 @@ class BaseComponent
         $this->authOptions = $authOptions;
         $this->entityManager = $authOptions->getEntityManager();
         $this->repositoryRegistry = new RepositoryRegistry($this->entityManager);
+    }
+
+    /**
+     * Insert or update entity
+     * @param  object $entity
+     * @return object
+     * @throws DatabaseException
+     * @throws UniqueConstraintViolationException
+     */
+    protected function saveEntity($entity)
+    {
+        try {
+            $this->entityManager->persist($entity);
+            $this->entityManager->flush($entity);
+            return $entity;
+        } catch (OptimisticLockException $e) {
+            throw new DatabaseException($e->getMessage());
+        }
     }
 
     /**
