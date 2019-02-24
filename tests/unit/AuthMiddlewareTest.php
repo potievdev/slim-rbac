@@ -28,12 +28,15 @@ class AuthMiddlewareTest extends BaseTestCase
      * @throws \Potievdev\SlimRbac\Exception\CyclicException
      * @throws \Potievdev\SlimRbac\Exception\DatabaseException
      * @throws \Potievdev\SlimRbac\Exception\NotUniqueException
+     * @throws \Doctrine\ORM\Query\QueryException
      */
     public function setUp()
     {
         parent::setUp();
 
         $authManager = new AuthManager($this->authOptions);
+        $authManager->removeAll();
+
         $edit = $authManager->createPermission('edit');
         $edit->setDescription('Edit permission');
         $authManager->addPermission($edit);

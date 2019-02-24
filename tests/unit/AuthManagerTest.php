@@ -27,6 +27,7 @@ class AuthManagerTest extends BaseTestCase
         parent::setUp();
 
         $this->authManager = new AuthManager($this->authOptions);
+        $this->authManager->removeAll();
 
         $edit = $this->authManager->createPermission('edit');
         $this->authManager->addPermission($edit);
