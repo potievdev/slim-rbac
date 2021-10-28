@@ -2,7 +2,7 @@
     <h1> Slim4 RBAC Middleware </h1>
 </div>
 
-[![Build Status](https://travis-ci.org/potievdev/slim-rbac.svg?branch=master)](https://travis-ci.org/potievdev/slim-rbac)
+[![Build Status](https://app.travis-ci.com/potievdev/slim-rbac.svg?branch=master)](https://app.travis-ci.com/potievdev/slim-rbac)
 [![codecov](https://codecov.io/gh/potievdev/slim-rbac/branch/master/graph/badge.svg)](https://codecov.io/gh/potievdev/slim-rbac)
 [![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fpotievdev%2Fslim-rbac.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2Fpotievdev%2Fslim-rbac?ref=badge_shield)
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/potievdev/slim-rbac/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/potievdev/slim-rbac/?branch=master)
