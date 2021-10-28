@@ -7,7 +7,7 @@ use Doctrine\ORM\Query\QueryException;
 use Potievdev\SlimRbac\Exception\InvalidArgumentException;
 use Potievdev\SlimRbac\Helper\ValidatorHelper;
 use Potievdev\SlimRbac\Models\RepositoryRegistry;
-use Potievdev\SlimRbac\Structure\AuthOptions;
+use Potievdev\SlimRbac\Structure\RbacManagerOptions;
 
 /**
  * Class BaseComponent
@@ -15,8 +15,8 @@ use Potievdev\SlimRbac\Structure\AuthOptions;
  */
 class BaseComponent
 {
-    /** @var  AuthOptions $authOptions */
-    protected $authOptions;
+    /** @var  RbacManagerOptions $rbacManagerOptions */
+    protected $rbacManagerOptions;
 
     /** @var  EntityManager $entityManager */
     protected $entityManager;
@@ -26,12 +26,12 @@ class BaseComponent
 
     /**
      * RbacManager constructor.
-     * @param AuthOptions $authOptions
+     * @param RbacManagerOptions $rbacManagerOptions
      */
-    public function __construct(AuthOptions $authOptions)
+    public function __construct(RbacManagerOptions $rbacManagerOptions)
     {
-        $this->authOptions = $authOptions;
-        $this->entityManager = $authOptions->getEntityManager();
+        $this->rbacManagerOptions = $rbacManagerOptions;
+        $this->entityManager = $rbacManagerOptions->getEntityManager();
         $this->repositoryRegistry = new RepositoryRegistry($this->entityManager);
     }
 

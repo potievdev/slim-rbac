@@ -4,7 +4,7 @@ namespace Potievdev\SlimRbac\Component;
 
 use Doctrine\ORM\Query\QueryException;
 use Potievdev\SlimRbac\Exception\InvalidArgumentException;
-use Potievdev\SlimRbac\Structure\AuthOptions;
+use Potievdev\SlimRbac\Structure\RbacManagerOptions;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
@@ -46,23 +46,23 @@ class RbacMiddleware extends BaseComponent
         return $response;
     }
 
-    private function getCurrentUserId(ServerRequestInterface  $request): int
+    private function getCurrentUserId(ServerRequestInterface $request): int
     {
-        $userIdFieldName = $this->authOptions->getUserIdFieldName();
-        $storageType = $this->authOptions->getUserIdStorageType();
+        $userIdFieldName = $this->rbacManagerOptions->getUserIdFieldName();
+        $storageType = $this->rbacManagerOptions->getUserIdStorageType();
 
         /** @var integer $userId */
         switch ($storageType) {
 
-            case AuthOptions::ATTRIBUTE_STORAGE_TYPE:
+            case RbacManagerOptions::ATTRIBUTE_STORAGE_TYPE:
                 $userId = intval($request->getAttribute($userIdFieldName));
                 break;
 
-            case AuthOptions::HEADER_STORAGE_TYPE:
+            case RbacManagerOptions::HEADER_STORAGE_TYPE:
                 $userId = intval($request->getHeaderLine($userIdFieldName));
                 break;
 
-            case AuthOptions::COOKIE_STORAGE_TYPE:
+            case RbacManagerOptions::COOKIE_STORAGE_TYPE:
                 $params = $request->getCookieParams();
                 $userId = intval($params[$userIdFieldName]);
                 break;

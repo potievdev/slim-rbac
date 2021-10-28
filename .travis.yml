@@ -9,11 +9,11 @@ services:
 before_install:
   - mysql -e 'CREATE DATABASE IF NOT EXISTS test;'
   - cp config/sr-config.example.php config/sr-config.php
-  - composer update
+  - composer install
 
 language: php
 php:
-  - '5.4'
+  - '7.3'
 
 script:
   - ./bin/slim-rbac migrate -c config/sr-config.php

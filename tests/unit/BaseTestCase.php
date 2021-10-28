@@ -5,7 +5,7 @@ namespace Tests\Unit;
 use Doctrine\ORM\EntityManager;
 use Potievdev\SlimRbac\Component\RbacManager;
 use Potievdev\SlimRbac\Models\RepositoryRegistry;
-use Potievdev\SlimRbac\Structure\AuthOptions;
+use Potievdev\SlimRbac\Structure\RbacManagerOptions;
 
 /**
  * Class BaseTestCase
@@ -23,23 +23,20 @@ class BaseTestCase extends \PHPUnit_Framework_TestCase
     /** @var RbacManager $rbacManager */
     protected $rbacManager;
 
-    /** @var AuthOptions $authOptions */
-    protected $authOptions;
+    /** @var RbacManagerOptions $rbacManagerOptions */
+    protected $rbacManagerOptions;
 
     /** @var RbacManager $rbacManager */
     protected $repositoryRegistry;
 
-    /** @var EntityManager $entityManager */
-    private $entityManager;
-
     /**
-     * Initializing AuthOptions, RbacManager and AuthOptions
+     * Initializing RbacManagerOptions, RbacManager and RbacManagerOptions
      */
     public function setUp(): void
     {
-        $this->entityManager = require __DIR__ . '/../../config/sr-config.php';
-        $this->authOptions = new AuthOptions($this->entityManager);
-        $this->rbacManager = new RbacManager($this->authOptions);
-        $this->repositoryRegistry = new RepositoryRegistry($this->entityManager);
+        $entityManager = require __DIR__ . '/../../config/sr-config.php';
+        $this->rbacManagerOptions = new RbacManagerOptions($entityManager);
+        $this->rbacManager = new RbacManager($this->rbacManagerOptions);
+        $this->repositoryRegistry = new RepositoryRegistry($entityManager);
     }
 }

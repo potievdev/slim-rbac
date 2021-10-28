@@ -11,7 +11,7 @@ use Potievdev\SlimRbac\Exception\CyclicException;
 use Potievdev\SlimRbac\Exception\DatabaseException;
 use Potievdev\SlimRbac\Exception\InvalidArgumentException;
 use Potievdev\SlimRbac\Exception\NotUniqueException;
-use Potievdev\SlimRbac\Structure\AuthOptions;
+use Potievdev\SlimRbac\Structure\RbacManagerOptions;
 
 /**
  * Class for testing RbacMiddleware
@@ -67,8 +67,8 @@ class RbacMiddlewareTest extends BaseTestCase
      */
     public function testCheckAccessSuccessCase()
     {
-        $middleware = new RbacMiddleware($this->authOptions);
-        $request = $this->request->withAttribute($this->authOptions->getUserIdFieldName(), self::ADMIN_USER_ID);
+        $middleware = new RbacMiddleware($this->rbacManagerOptions);
+        $request = $this->request->withAttribute($this->rbacManagerOptions->getUserIdFieldName(), self::ADMIN_USER_ID);
         $response = $middleware->__invoke($request, $this->response, $this->callable);
         $this->assertEquals(200, $response->getStatusCode());
     }
@@ -79,8 +79,8 @@ class RbacMiddlewareTest extends BaseTestCase
      */
     public function testCheckAccessDeniedCase()
     {
-        $middleware = new RbacMiddleware($this->authOptions);
-        $request = $this->request->withAttribute($this->authOptions->getUserIdFieldName(), self::MODERATOR_USER_ID);
+        $middleware = new RbacMiddleware($this->rbacManagerOptions);
+        $request = $this->request->withAttribute($this->rbacManagerOptions->getUserIdFieldName(), self::MODERATOR_USER_ID);
         $response = $middleware->__invoke($request, $this->response, $this->callable);
         $this->assertEquals(403, $response->getStatusCode());
     }
@@ -91,10 +91,10 @@ class RbacMiddlewareTest extends BaseTestCase
      */
     public function testCheckReadingUserIdFromHeader()
     {
-        $authOptions = $this->authOptions;
-        $authOptions->setUserIdStorageType(AuthOptions::HEADER_STORAGE_TYPE);
-        $middleware = new RbacMiddleware($authOptions);
-        $request = $this->request->withHeader($authOptions->getUserIdFieldName(), self::ADMIN_USER_ID);
+        $rbacManagerOptions = $this->rbacManagerOptions;
+        $rbacManagerOptions->setUserIdStorageType(RbacManagerOptions::HEADER_STORAGE_TYPE);
+        $middleware = new RbacMiddleware($rbacManagerOptions);
+        $request = $this->request->withHeader($rbacManagerOptions->getUserIdFieldName(), self::ADMIN_USER_ID);
         $response = $middleware->__invoke($request, $this->response, $this->callable);
         $this->assertEquals(200, $response->getStatusCode());
     }
@@ -105,10 +105,10 @@ class RbacMiddlewareTest extends BaseTestCase
      */
     public function testCheckReadingUserIdFromCookie()
     {
-        $authOptions = $this->authOptions;
-        $authOptions->setUserIdStorageType(AuthOptions::COOKIE_STORAGE_TYPE);
-        $middleware = new RbacMiddleware($authOptions);
-        $request = $this->request->withCookieParams([$authOptions->getUserIdFieldName() => self::ADMIN_USER_ID]);
+        $rbacManagerOptions = $this->rbacManagerOptions;
+        $rbacManagerOptions->setUserIdStorageType(RbacManagerOptions::COOKIE_STORAGE_TYPE);
+        $middleware = new RbacMiddleware($rbacManagerOptions);
+        $request = $this->request->withCookieParams([$rbacManagerOptions->getUserIdFieldName() => self::ADMIN_USER_ID]);
         $response = $middleware->__invoke($request, $this->response, $this->callable);
         $this->assertEquals(200, $response->getStatusCode());
     }
