@@ -5,12 +5,12 @@ namespace Potievdev\SlimRbac\Structure;
 use Doctrine\ORM\EntityManager;
 
 /**
- * Authorization manager options structure.
- * The instance of this class accepted as argument for constructor of RbacManager
- * Class AuthOptions
+ * RBAC manager options structure.
+ * The instance of this class accepted as argument for constructor of RbacManager.
+ * Class RbacManagerOptions
  * @package Potievdev\Structure
  */
-class AuthOptions
+class RbacManagerOptions
 {
     /** Default user id field name */
     const DEFAULT_USER_ID_FIELD_NAME = 'userId';

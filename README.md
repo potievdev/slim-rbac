@@ -1,5 +1,5 @@
 <div align="center">
-    <h1> Slim3 RBAC Middleware </h1>
+    <h1> Slim4 RBAC Middleware </h1>
 </div>
 
 [![Build Status](https://travis-ci.org/potievdev/slim-rbac.svg?branch=master)](https://travis-ci.org/potievdev/slim-rbac)
@@ -13,15 +13,18 @@ This package helps you to release access control logic via [RBAC](https://en.wik
 
 ## :clipboard: Requirements
 
-- The minimum required PHP version is PHP 5.4.
-- Database (MySQL, PostgreSQL, MariaDB)
+- The minimum required PHP version is PHP 7.3.
+- Supported database engines 
+  * MySQL
+  * PostgreSQL
+  * MariaDB
 
 ## :wrench: Installation
 
 ### First step
 
 ```sh
-$ composer require potievdev/slim-rbac "^1.0"
+$ composer require potievdev/slim-rbac "^2.0"
 ```
 
 ### Second step
@@ -44,7 +47,7 @@ return EntityManager::getInstance();
 
 #### Else
 
-Run next command in root directory or in directory where save
+Run next command in root directory or in directory where saved
 configuration files of project
 
 ```sh
@@ -94,102 +97,89 @@ If all `OK` you must see list of applied migrations, which prints `phinx`
 
 There are tree major components
 
-- `AuthOptions` - context for saving configurations
-- `AuthManager` - component for managing roles and permissions
-- `AuthMiddleware` - Slim3 middleware
+- `RbacManagerOptions` - context for saving `RbacManager` configurations.
+- `RbacManager` - component for managing roles and permissions.
+- `RbacMiddleware` - Slim4 middleware component.
 
-### About AuthOptions
-Saves configuration values for AuthMiddleware and AuthManager
-- `setEntityManager` - sets EntityManager instance
-- `setVariableStorageType` - sets where we will save current user identifier.
+### About RbacManagerOptions
+Container for saving configuration params for RbacMiddleware and RbacManager.
+- `setUserIdStorageType` - sets where we will save current user identifier.
 In below given table you can see list of storage types
-- `setVariableName` - sets field name, where we save current user identifier.
-Default value: `AuthOptions::DEFAULT_VARIABLE_NAME` which equals to `userId`
+- `setUserIdFieldName` - sets field name, where we save current user identifier.
+Default value: `RbacManagerOptions::DEFAULT_USER_ID_FIELD_NAME` which equals to `userId`
 
 | Storage Type | Description | Default |
 | ------------ | ----------- | ------- |
-| `AuthOptions::ATTRIBUTE_STORAGE_TYPE` | Middleware gets user id from attributes | Yes |
-| `AuthOptions::HEADER_STORAGE_TYPE` | Middleware gets user id from header | No |
-| `AuthOptions::COOKIE_STORAGE_TYPE` | Middleware gets user id cookie | No |
+| `RbacManagerOptions::ATTRIBUTE_STORAGE_TYPE` | Middleware gets user id from attributes | Yes |
+| `RbacManagerOptions::HEADER_STORAGE_TYPE` | Middleware gets user id from header | No |
+| `RbacManagerOptions::COOKIE_STORAGE_TYPE` | Middleware gets user id cookie | No |
 
 
-### About AuthMiddleware
-AuthMiddleware only checks permissions.
-By default the permission name is same with uri path
+### About RbacMiddleware
+RbacMiddleware checks permissions.
+By default, the permission name is same with uri path.
 
 ```php
 $permissionName = $request->getUri()->getPath();
 ```
-For url `https://example.com/write` permission name is `/write`  
+For url `https://example.com/write` permission name is `/write`.  
 
-When permission denied, middleware returns response with code `403`
+When permission denied, middleware returns response with code `403`.
 
 
-### How initialize AuthMiddleware 
+### How initialize RbacMiddleware 
 
-1. Create AuthOptions instance and configure it 
+1. Create RbacManagerOptions instance and configure it 
 
 ```php
 
-$authOptions = new AuthOptions();
-// Setting entity manager instance
-$authOptions->setEntityManager($entityManager);
+$rbacManagerOptions = new RbacManagerOptions($entityManager);
 
 ```
 2. Adding middleware
 
 ```php
 // $app is instance of Slim application
-$app->add(new AuthMiddleware($authOptions));
+$app->add(new RbacMiddleware($rbacManagerOptions));
 ```
 
-### How initialize  AuthManager
- 1. Create AuthOptions instance and configure it 
+### How initialize RbacManager
+ 1. Create RbacManagerOptions instance and configure it 
  
  ```php
- 
- $authOptions = new AuthOptions();
- // Setting entity manager instance
- $authOptions->setEntityManager($entityManager);
- 
- ```
+  $rbacManagerOptions = new RbacManagerOptions($entityManager);
+  ```
  2. Create manager instance
  
  ```php
-$authManager = new AuthManager($this->authOptions);
+$rbacManager = new RbacManager($this->rbacManagerOptions);
  ```
  
 Simple example
  ```php
 
  // Creating edit permission
-        $edit = $this->authManager->createPermission('/edit');
-        $edit->setDescription('This is edit permission'); // Optional
-        $this->authManager->addPermission($edit);
+        $edit = $this->rbacManager->createPermission('/edit', 'This is edit permission');
 
 // Creating write permission
-        $write = $this->authManager->createPermission('/write');
-        $this->authManager->addPermission($write);
+        $write = $this->rbacManager->createPermission('/write');
 
 // Creating moderator role
-        $moderator = $this->authManager->createRole('moderator');
-        $moderator->setDescription('This is moderator role'); // Optional
-        $this->authManager->addRole($moderator);
+        $moderator = $this->rbacManager->createRole('moderator', 'This is moderator role');
 
 // Creating admin role
-        $admin = $this->authManager->createRole('admin');
-        $this->authManager->addRole($admin);
+        $admin = $this->rbacManager->createRole('admin');
 
 // Adding permissions to roles
-        $this->authManager->addChildPermission($moderator, $edit);
-        $this->authManager->addChildPermission($admin, $write);
+        $this->rbacManager->attachPermission($moderator, $edit);
+        $this->rbacManager->attachPermission($admin, $write);
 
 // Adding child role to role
-        $this->authManager->addChildRole($admin, $moderator);
+        $this->rbacManager->attachChildRole($admin, $moderator);
 
 // Assigning roles to users
-        $this->authManager->assign($moderator, 1);
-        $this->authManager->assign($admin, 2);
+        $this->rbacManager->assign($moderator, 1);
+        $this->rbacManager->assign($admin, 2);
  ```
 
 ## :crossed_flags: Contribution
@@ -197,5 +187,3 @@ Please see [CONTRIBUTING](CONTRIBUTING.md) for details.
 
 ## :memo: Licence
 MIT License
-
-Copyright (c) 2018 ABDULMALIK ABDULPOTIEV
