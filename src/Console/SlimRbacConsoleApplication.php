@@ -15,7 +15,7 @@ class SlimRbacConsoleApplication extends Application
      *
      * @param string $version The Application Version
      */
-    public function __construct($version = '1.0.0')
+    public function __construct(string $version = '1.0.0')
     {
         parent::__construct('https://github.com/potievdev/slim-rbac?v=' . $version);
 
@@ -34,7 +34,7 @@ class SlimRbacConsoleApplication extends Application
      * @return integer 0 if everything went fine, or an error code
      * @throws \Throwable
      */
-    public function doRun(InputInterface $input, OutputInterface $output)
+    public function doRun(InputInterface $input, OutputInterface $output): int
     {
         // always show the version information except when the user invokes the help
         // command as that already does it

@@ -2,6 +2,7 @@
 
 namespace Tests\Unit;
 
+use Doctrine\ORM\EntityManager;
 use Potievdev\SlimRbac\Structure\AuthOptions;
 
 /**
@@ -15,15 +16,16 @@ class AuthOptionsTest extends BaseTestCase
      */
     public function testCheckSetAndGetMethods()
     {
-        $authOptions = $this->createAuthOptions();
+        $authOptions = $this->authOptions;
 
-        $this->assertEquals(AuthOptions::DEFAULT_VARIABLE_NAME, $authOptions->getVariableName());
-        $this->assertEquals(AuthOptions::ATTRIBUTE_STORAGE_TYPE, $authOptions->getVariableStorageType());
+        $this->assertInstanceOf(EntityManager::class, $authOptions->getEntityManager());
+        $this->assertEquals(AuthOptions::DEFAULT_USER_ID_FIELD_NAME, $authOptions->getUserIdFieldName());
+        $this->assertEquals(AuthOptions::ATTRIBUTE_STORAGE_TYPE, $authOptions->getUserIdStorageType());
 
-        $authOptions->setVariableName('var1');
-        $this->assertEquals('var1', $authOptions->getVariableName());
+        $authOptions->setUserIdFieldName('userIdentifier');
+        $this->assertEquals('userIdentifier', $authOptions->getUserIdFieldName());
 
-        $authOptions->setVariableStorageType(AuthOptions::COOKIE_STORAGE_TYPE);
-        $this->assertEquals(AuthOptions::COOKIE_STORAGE_TYPE, $authOptions->getVariableStorageType());
+        $authOptions->setUserIdStorageType(AuthOptions::COOKIE_STORAGE_TYPE);
+        $this->assertEquals(AuthOptions::COOKIE_STORAGE_TYPE, $authOptions->getUserIdStorageType());
     }
 }

@@ -33,7 +33,7 @@ class RolePermissionRepository extends EntityRepository
      * @param integer[] $roleIds
      * @return bool
      */
-    public function isPermissionAssigned($permissionId, $roleIds)
+    public function isPermissionAssigned(int $permissionId, array $roleIds): bool
     {
         $qb = $this->createQueryBuilder('rolePermission');
 

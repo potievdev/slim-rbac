@@ -2,12 +2,17 @@
 
 namespace Potievdev\SlimRbac\Models\Entity;
 
+use DateTime;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
  * UserRole
  *
- * @ORM\Table(name="user_role", uniqueConstraints={@ORM\UniqueConstraint(name="idx_user_role_unique", columns={"user_id", "role_id"})}, indexes={@ORM\Index(name="fk_user_role_role", columns={"role_id"})})
+ * @ORM\Table(
+ *     name="user_role",
+ *     uniqueConstraints={@ORM\UniqueConstraint(name="idx_user_role_unique", columns={"user_id", "role_id"})},
+ *     indexes={@ORM\Index(name="fk_user_role_role", columns={"role_id"})}
+ *     )
  * @ORM\Entity(repositoryClass="Potievdev\SlimRbac\Models\Repository\UserRoleRepository")
  * @ORM\HasLifecycleCallbacks
  */
@@ -37,14 +42,14 @@ class UserRole
     private $roleId;
 
     /**
-     * @var \DateTime
+     * @var DateTime
      *
      * @ORM\Column(name="created_at", type="datetime", nullable=false)
      */
     private $createdAt;
 
     /**
-     * @var \Potievdev\SlimRbac\Models\Entity\Role
+     * @var Role
      *
      * @ORM\ManyToOne(targetEntity="Potievdev\SlimRbac\Models\Entity\Role")
      * @ORM\JoinColumns({
@@ -53,91 +58,59 @@ class UserRole
      */
     private $role;
 
-    /**
-     * @return int
-     */
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }
 
-    /**
-     * @param int $id
-     */
-    public function setId($id)
+    public function setId(int $id)
     {
         $this->id = $id;
     }
 
-    /**
-     * @return int
-     */
-    public function getUserId()
+    public function getUserId(): int
     {
         return $this->userId;
     }
 
-    /**
-     * @param int $userId
-     */
-    public function setUserId($userId)
+    public function setUserId(int $userId)
     {
         $this->userId = $userId;
     }
 
-    /**
-     * @return int
-     */
-    public function getRoleId()
+    public function getRoleId(): int
     {
         return $this->roleId;
     }
 
-    /**
-     * @param int $roleId
-     */
-    public function setRoleId($roleId)
+    public function setRoleId(int $roleId)
     {
         $this->roleId = $roleId;
     }
 
-    /**
-     * @return \DateTime
-     */
-    public function getCreatedAt()
+    public function getCreatedAt(): DateTime
     {
         return $this->createdAt;
     }
 
-    /**
-     * @param \DateTime $createdAt
-     */
-    public function setCreatedAt($createdAt)
+    public function setCreatedAt(DateTime $createdAt)
     {
         $this->createdAt = $createdAt;
     }
 
-    /**
-     * @return Role
-     */
-    public function getRole()
+    public function getRole(): Role
     {
         return $this->role;
     }
 
-    /**
-     * @param Role $role
-     */
-    public function setRole($role)
+    public function setRole(Role $role)
     {
         $this->role = $role;
     }
 
-    /** @ORM\PrePersist
-     * @throws \Exception
-     */
+    /** @ORM\PrePersist */
     public function prePersist()
     {
-        $this->createdAt = new \DateTime();
+        $this->createdAt = new DateTime();
     }
 }

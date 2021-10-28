@@ -11,10 +11,10 @@ class ValidatorHelper
 {
     /**
      * Checks number for integer type
-     * @param integer $number
+     * @param mixed $number
      * @return bool
      */
-    public static function isInteger($number)
+    public static function isInteger($number): bool
     {
         return is_integer($number);
     }

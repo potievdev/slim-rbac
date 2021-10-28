@@ -3,6 +3,9 @@
 namespace Potievdev\SlimRbac\Component;
 
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
+use Doctrine\ORM\OptimisticLockException;
+use Doctrine\ORM\Query\QueryException;
+use Exception;
 use Potievdev\SlimRbac\Exception\CyclicException;
 use Potievdev\SlimRbac\Exception\DatabaseException;
 use Potievdev\SlimRbac\Exception\NotUniqueException;
@@ -14,32 +17,16 @@ use Potievdev\SlimRbac\Models\Entity\UserRole;
 
 /**
  * Component for creating and controlling with role and permissions.
- * Class AuthManager
+ * Class RbacManager
  * @package Potievdev\SlimRbac\Component
  */
-class AuthManager extends BaseComponent
+class RbacManager extends BaseComponent
 {
     /**
-     * Checking hierarchy cyclic line
-     * @param integer $parentRoleId
-     * @param integer $childRoleId
-     * @throws CyclicException
-     * @throws \Doctrine\ORM\Query\QueryException
-     */
-    private function checkForCyclicHierarchy($parentRoleId, $childRoleId)
-    {
-        $result = $this->repositoryRegistry
-            ->getRoleHierarchyRepository()
-            ->hasChildRoleId($parentRoleId, $childRoleId);
-
-        if ($result === true) {
-            throw new CyclicException('There detected cyclic line. Role with id = ' . $parentRoleId . ' has child role whit id =' . $childRoleId);
-        }
-    }
-
-    /**
-     * Truncates all tables
+     * Deletes all data from database. Use carefully!!!
+     *
      * @throws DatabaseException
+     * @throws \Doctrine\DBAL\Driver\Exception|\Doctrine\DBAL\Exception
      */
     public function removeAll()
     {
@@ -47,87 +34,72 @@ class AuthManager extends BaseComponent
         $pdo->beginTransaction();
 
         try {
-
-            $pdo->exec('SET FOREIGN_KEY_CHECKS=0');
-            $pdo->exec('TRUNCATE role_permission');
-            $pdo->exec('TRUNCATE role_hierarchy');
-            $pdo->exec('TRUNCATE role');
-            $pdo->exec('TRUNCATE permission');
-            $pdo->exec('TRUNCATE user_role');
-            $pdo->exec('SET FOREIGN_KEY_CHECKS=1');
+            $pdo->exec('DELETE FROM role_permission WHERE 1 > 0');
+            $pdo->exec('DELETE FROM role_hierarchy WHERE 1 > 0');
+            $pdo->exec('DELETE FROM permission WHERE 1 > 0');
+            $pdo->exec('DELETE FROM user_role WHERE 1 > 0');
+            $pdo->exec('DELETE FROM role WHERE 1 > 0');
 
             $pdo->commit();
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $pdo->rollBack();
             throw new DatabaseException($e->getMessage());
         }
     }
 
     /**
-     * Creates permission instance with given name and return it
-     * @param string $permissionMane
-     * @return Permission
+     * Creates permission instance with given name and return it.
+     * @throws NotUniqueException|DatabaseException
      */
-    public function createPermission($permissionMane)
+    public function createPermission(string $permissionMane, ?string $description = null): Permission
     {
         $permission = new Permission();
         $permission->setName($permissionMane);
+
+        if (isset($description)) {
+            $permission->setDescription($description);
+        }
+
+        try {
+            $this->saveEntity($permission);
+        } catch (UniqueConstraintViolationException $e) {
+            throw new NotUniqueException('Permission with name ' . $permissionMane . ' already created');
+        }
 
         return $permission;
     }
 
     /**
-     * Creates role instance with given name and return it
-     * @param string $roleName
-     * @return Role
+     * Creates role instance with given name and return it.
+     *
+     * @throws NotUniqueException|DatabaseException
      */
-    public function createRole($roleName)
+    public function createRole(string $roleName, ?string $description = null): Role
     {
         $role = new Role();
         $role->setName($roleName);
+
+        if (isset($description)) {
+            $role->setDescription($description);
+        }
+
+        try {
+            $this->saveEntity($role);
+        } catch (UniqueConstraintViolationException $e) {
+            throw new NotUniqueException('Role with name ' . $roleName . ' already created');
+        }
 
         return $role;
     }
 
     /**
-     * Save permission in database
-     * @param Permission $permission
-     * @throws NotUniqueException
-     * @throws DatabaseException
-     */
-    public function addPermission(Permission $permission)
-    {
-        try {
-            $this->saveEntity($permission);
-        } catch (UniqueConstraintViolationException $e) {
-            throw new NotUniqueException('Permission with name ' . $permission->getName() . ' already created');
-        }
-    }
-
-    /**
-     * Save role in database
-     * @param Role $role
-     * @throws NotUniqueException
-     * @throws DatabaseException
-     */
-    public function addRole(Role $role)
-    {
-        try {
-            $this->saveEntity($role);
-        } catch (UniqueConstraintViolationException $e) {
-            throw new NotUniqueException('Role with name ' . $role->getName() . ' already created');
-        }
-    }
-
-    /**
-     * Add permission to role
-     * @param Role $role
-     * @param Permission $permission
+     * Add permission to role.
+     *
      * @throws DatabaseException
      * @throws NotUniqueException
      */
-    public function addChildPermission(Role $role, Permission $permission)
+    public function attachPermission(Role $role, Permission $permission)
     {
         $rolePermission = new RolePermission();
 
@@ -142,15 +114,14 @@ class AuthManager extends BaseComponent
     }
 
     /**
-     * Add child role to role
-     * @param Role $parentRole
-     * @param Role $childRole
+     * Add child role to role.
+     *
      * @throws CyclicException
      * @throws DatabaseException
      * @throws NotUniqueException
-     * @throws \Doctrine\ORM\Query\QueryException
+     * @throws QueryException
      */
-    public function addChildRole(Role $parentRole, Role $childRole)
+    public function attachChildRole(Role $parentRole, Role $childRole)
     {
         $roleHierarchy = new RoleHierarchy();
 
@@ -167,13 +138,12 @@ class AuthManager extends BaseComponent
     }
 
     /**
-     * Assign role to user
-     * @param Role $role
-     * @param integer $userId
+     * Assign role to user.
+     *
      * @throws NotUniqueException
      * @throws DatabaseException
      */
-    public function assign(Role $role, $userId)
+    public function assign(Role $role, int $userId)
     {
         $userRole = new UserRole();
 
@@ -184,6 +154,38 @@ class AuthManager extends BaseComponent
             $this->saveEntity($userRole);
         } catch (UniqueConstraintViolationException $e) {
             throw new NotUniqueException('Role ' . $role->getName() . 'is already assigned to user with identifier ' . $userId);
+        }
+    }
+
+    /**
+     * Checking hierarchy cyclic line.
+     *
+     * @throws CyclicException
+     * @throws QueryException
+     */
+    private function checkForCyclicHierarchy(int $parentRoleId, int $childRoleId): void
+    {
+        $result = $this->repositoryRegistry
+            ->getRoleHierarchyRepository()
+            ->hasChildRoleId($parentRoleId, $childRoleId);
+
+        if ($result === true) {
+            throw new CyclicException('There detected cyclic line. Role with id = ' . $parentRoleId . ' has child role with id =' . $childRoleId);
+        }
+    }
+
+    /**
+     * Insert or update entity.
+     *
+     * @throws DatabaseException|UniqueConstraintViolationException
+     */
+    private function saveEntity(object $entity): void
+    {
+        try {
+            $this->entityManager->persist($entity);
+            $this->entityManager->flush($entity);
+        } catch (OptimisticLockException $e) {
+            throw new DatabaseException($e->getMessage());
         }
     }
 }

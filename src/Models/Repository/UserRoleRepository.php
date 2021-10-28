@@ -3,6 +3,7 @@
 namespace Potievdev\SlimRbac\Models\Repository;
 
 use Doctrine\ORM\EntityRepository;
+use Doctrine\ORM\Query\QueryException;
 
 /**
  * UserRoleRepository
@@ -13,11 +14,11 @@ use Doctrine\ORM\EntityRepository;
 class UserRoleRepository extends EntityRepository
 {
     /**
-     * @param integer $userId
-     * @return array
-     * @throws \Doctrine\ORM\Query\QueryException
+     * Returns array of user role ids.
+     *
+     * @throws QueryException
      */
-    public function getUserRoleIds($userId)
+    public function getUserRoleIds(int $userId): array
     {
         $qb = $this->createQueryBuilder('userRole');
 

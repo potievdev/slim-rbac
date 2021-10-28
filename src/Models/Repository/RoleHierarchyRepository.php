@@ -3,6 +3,7 @@
 namespace Potievdev\SlimRbac\Models\Repository;
 
 use Doctrine\ORM\EntityRepository;
+use Doctrine\ORM\Query\QueryException;
 use Potievdev\SlimRbac\Helper\ArrayHelper;
 
 /**
@@ -14,39 +15,18 @@ use Potievdev\SlimRbac\Helper\ArrayHelper;
 class RoleHierarchyRepository extends EntityRepository
 {
     /**
-     * Returns array of child role ids for given parent role ids
-     * @param integer[] $parentIds
-     * @return integer[]
-     * @throws \Doctrine\ORM\Query\QueryException
-     */
-    private function getChildIds($parentIds)
-    {
-        $qb = $this->createQueryBuilder('roleHierarchy');
-
-        $qb->select('roleHierarchy.childRoleId')
-            ->where($qb->expr()->in( 'roleHierarchy.parentRoleId', $parentIds))
-            ->indexBy('roleHierarchy', 'roleHierarchy.childRoleId');
-
-        $childRoleIds =  $qb->getQuery()->getArrayResult();
-
-        return array_keys($childRoleIds);
-    }
-
-    /**
      * Finding child identifier in roles three where $parentRoleId is in the top of three
-     * @param integer $parentRoleId
-     * @param integer $findingChildId
-     * @return bool
-     * @throws \Doctrine\ORM\Query\QueryException
+     * @throws QueryException
      */
-    public function hasChildRoleId($parentRoleId, $findingChildId)
+    public function hasChildRoleId(int $parentRoleId, int $findingChildId): bool
     {
         $childIds = $this->getChildIds([$parentRoleId]);
 
         if (count($childIds) > 0) {
 
-            if (in_array($findingChildId, $childIds))
+            if (in_array($findingChildId, $childIds)) {
                 return true;
+            }
 
             foreach ($childIds as $childId) {
 
@@ -61,12 +41,25 @@ class RoleHierarchyRepository extends EntityRepository
     }
 
     /**
-     * Returns all child role ids for given parent role ids
+     * @param integer[] $rootRoleIds
+     * @return integer[]
+     * @throws QueryException
+     */
+    public function getAllRoleIdsHierarchy(array $rootRoleIds): array
+    {
+        $childRoleIds = $this->getAllChildRoleIds($rootRoleIds);
+
+        return ArrayHelper::merge($rootRoleIds, $childRoleIds);
+    }
+
+    /**
+     * Returns all hierarchically child role ids for given parent role ids.
+     *
      * @param integer[] $parentIds
      * @return integer[]
-     * @throws \Doctrine\ORM\Query\QueryException
+     * @throws QueryException
      */
-    private function getAllChildRoleIds($parentIds)
+    private function getAllChildRoleIds(array $parentIds): array
     {
         $allChildIds = [];
 
@@ -79,14 +72,22 @@ class RoleHierarchyRepository extends EntityRepository
     }
 
     /**
-     * @param integer[] $rootRoleIds
+     * Returns array of child role ids for given parent role ids.
+     *
+     * @param integer[] $parentIds
      * @return integer[]
-     * @throws \Doctrine\ORM\Query\QueryException
+     * @throws QueryException
      */
-    public function getAllRoleIdsHierarchy($rootRoleIds)
+    private function getChildIds(array $parentIds): array
     {
-        $childRoleIds = $this->getAllChildRoleIds($rootRoleIds);
+        $qb = $this->createQueryBuilder('roleHierarchy');
 
-        return ArrayHelper::merge($rootRoleIds, $childRoleIds);
+        $qb->select('roleHierarchy.childRoleId')
+            ->where($qb->expr()->in( 'roleHierarchy.parentRoleId', $parentIds))
+            ->indexBy('roleHierarchy', 'roleHierarchy.childRoleId');
+
+        $childRoleIds =  $qb->getQuery()->getArrayResult();
+
+        return array_keys($childRoleIds);
     }
 }
