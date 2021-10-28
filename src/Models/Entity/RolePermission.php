@@ -2,12 +2,20 @@
 
 namespace Potievdev\SlimRbac\Models\Entity;
 
+use DateTime;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
  * RolePermission
  *
- * @ORM\Table(name="role_permission", uniqueConstraints={@ORM\UniqueConstraint(name="idx_role_permission_unique", columns={"role_id", "permission_id"})}, indexes={@ORM\Index(name="fk_role_permission_permission", columns={"permission_id"}), @ORM\Index(name="IDX_6F7DF886D60322AC", columns={"role_id"})})
+ * @ORM\Table(
+ *     name="role_permission",
+ *     uniqueConstraints={@ORM\UniqueConstraint(name="idx_role_permission_unique", columns={"role_id", "permission_id"})},
+ *     indexes={
+ *          @ORM\Index(name="fk_role_permission_permission", columns={"permission_id"}),
+ *          @ORM\Index(name="fk_role_permission_role", columns={"role_id"})
+ *     }
+ * )
  * @ORM\Entity(repositoryClass="Potievdev\SlimRbac\Models\Repository\RolePermissionRepository")
  * @ORM\HasLifecycleCallbacks
  */
@@ -23,7 +31,7 @@ class RolePermission
     private $id;
 
     /**
-     * @var \DateTime
+     * @var DateTime
      *
      * @ORM\Column(name="created_at", type="datetime", nullable=false)
      */
@@ -44,7 +52,7 @@ class RolePermission
     private $permissionId;
 
     /**
-     * @var \Potievdev\SlimRbac\Models\Entity\Permission
+     * @var Permission
      *
      * @ORM\ManyToOne(targetEntity="Potievdev\SlimRbac\Models\Entity\Permission")
      * @ORM\JoinColumns({
@@ -54,7 +62,7 @@ class RolePermission
     private $permission;
 
     /**
-     * @var \Potievdev\SlimRbac\Models\Entity\Role
+     * @var Role
      *
      * @ORM\ManyToOne(targetEntity="Potievdev\SlimRbac\Models\Entity\Role")
      * @ORM\JoinColumns({
@@ -63,107 +71,69 @@ class RolePermission
      */
     private $role;
 
-    /**
-     * @return int
-     */
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }
 
-    /**
-     * @param int $id
-     */
-    public function setId($id)
+    public function setId(int $id)
     {
         $this->id = $id;
     }
 
-    /**
-     * @return int
-     */
-    public function getRoleId()
+    public function getRoleId(): int
     {
         return $this->roleId;
     }
 
-    /**
-     * @param int $roleId
-     */
-    public function setRoleId($roleId)
+    public function setRoleId(int $roleId)
     {
         $this->roleId = $roleId;
     }
 
-    /**
-     * @return int
-     */
-    public function getPermissionId()
+    public function getPermissionId(): int
     {
         return $this->permissionId;
     }
 
-    /**
-     * @param int $permissionId
-     */
-    public function setPermissionId($permissionId)
+    public function setPermissionId(int $permissionId)
     {
         $this->permissionId = $permissionId;
     }
 
-    /**
-     * @return \DateTime
-     */
-    public function getCreatedAt()
+    public function getCreatedAt(): DateTime
     {
         return $this->createdAt;
     }
 
-    /**
-     * @param \DateTime $createdAt
-     */
-    public function setCreatedAt($createdAt)
+    public function setCreatedAt(DateTime $createdAt)
     {
         $this->createdAt = $createdAt;
     }
 
-    /**
-     * @return Permission
-     */
-    public function getPermission()
+    public function getPermission(): Permission
     {
         return $this->permission;
     }
 
-    /**
-     * @param Permission $permission
-     */
-    public function setPermission($permission)
+    public function setPermission(Permission $permission)
     {
         $this->permission = $permission;
     }
 
-    /**
-     * @return Role
-     */
-    public function getRole()
+    public function getRole(): Role
     {
         return $this->role;
     }
 
-    /**
-     * @param Role $role
-     */
-    public function setRole($role)
+    public function setRole(Role $role)
     {
         $this->role = $role;
     }
 
-    /** @ORM\PrePersist
-     * @throws \Exception
-     */
+    /** @ORM\PrePersist */
     public function prePersist()
     {
-        $this->createdAt = new \DateTime();
+        $this->createdAt = new DateTime();
     }
 }

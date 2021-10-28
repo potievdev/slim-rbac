@@ -14,10 +14,8 @@ class PermissionRepository extends EntityRepository
 {
     /**
      * Finds permission by name. If it founded returns permission id
-     * @param string $permissionName
-     * @return integer
      */
-    public function getPermissionIdByName($permissionName)
+    public function getPermissionIdByName(string $permissionName): ?int
     {
         $qb = $this->createQueryBuilder('permission');
 

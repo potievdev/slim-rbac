@@ -2,12 +2,20 @@
 
 namespace Potievdev\SlimRbac\Models\Entity;
 
+use DateTime;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
  * RoleHierarchy
  *
- * @ORM\Table(name="role_hierarchy", uniqueConstraints={@ORM\UniqueConstraint(name="idx_role_hierarchy_unique", columns={"parent_role_id", "child_role_id"})}, indexes={@ORM\Index(name="fk_role_hierarchy_child", columns={"child_role_id"}), @ORM\Index(name="IDX_AB8EFB72A44B56EA", columns={"parent_role_id"})})
+ * @ORM\Table(
+ *     name="role_hierarchy",
+ *     uniqueConstraints={@ORM\UniqueConstraint(name="idx_role_hierarchy_unique", columns={"parent_role_id", "child_role_id"})},
+ *     indexes={
+ *          @ORM\Index(name="fk_role_hierarchy_child", columns={"child_role_id"}),
+ *          @ORM\Index(name="fk_role_hierarchy_parent", columns={"parent_role_id"})
+ *     }
+ * )
  * @ORM\Entity(repositoryClass="Potievdev\SlimRbac\Models\Repository\RoleHierarchyRepository")
  * @ORM\HasLifecycleCallbacks
  */
@@ -23,7 +31,7 @@ class RoleHierarchy
     private $id;
 
     /**
-     * @var \DateTime
+     * @var DateTime
      *
      * @ORM\Column(name="created_at", type="datetime", nullable=false)
      */
@@ -44,7 +52,7 @@ class RoleHierarchy
     private $childRoleId;
 
     /**
-     * @var \Potievdev\SlimRbac\Models\Entity\Role
+     * @var Role
      *
      * @ORM\ManyToOne(targetEntity="Potievdev\SlimRbac\Models\Entity\Role")
      * @ORM\JoinColumns({
@@ -54,7 +62,7 @@ class RoleHierarchy
     private $childRole;
 
     /**
-     * @var \Potievdev\SlimRbac\Models\Entity\Role
+     * @var Role
      *
      * @ORM\ManyToOne(targetEntity="Potievdev\SlimRbac\Models\Entity\Role")
      * @ORM\JoinColumns({
@@ -63,75 +71,49 @@ class RoleHierarchy
      */
     private $parentRole;
 
-    /**
-     * @return int
-     */
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }
 
-    /**
-     * @param int $id
-     */
-    public function setId($id)
+    public function setId(int $id)
     {
         $this->id = $id;
     }
 
-    /**
-     * @return \DateTime
-     */
-    public function getCreatedAt()
+    public function getCreatedAt(): DateTime
     {
         return $this->createdAt;
     }
 
-    /**
-     * @param \DateTime $createdAt
-     */
-    public function setCreatedAt($createdAt)
+    public function setCreatedAt(DateTime $createdAt)
     {
         $this->createdAt = $createdAt;
     }
 
-    /**
-     * @return Role
-     */
-    public function getChildRole()
+    public function getChildRole(): Role
     {
         return $this->childRole;
     }
 
-    /**
-     * @param Role $childRole
-     */
-    public function setChildRole($childRole)
+    public function setChildRole(Role $childRole)
     {
         $this->childRole = $childRole;
     }
 
-    /**
-     * @return Role
-     */
-    public function getParentRole()
+    public function getParentRole(): Role
     {
         return $this->parentRole;
     }
 
-    /**
-     * @param Role $parentRole
-     */
-    public function setParentRole($parentRole)
+    public function setParentRole(Role $parentRole)
     {
         $this->parentRole = $parentRole;
     }
 
-    /** @ORM\PrePersist
-     * @throws \Exception
-     */
+    /** @ORM\PrePersist */
     public function prePersist()
     {
-        $this->createdAt = new \DateTime();
+        $this->createdAt = new DateTime();
     }
 }

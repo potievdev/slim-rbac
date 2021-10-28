@@ -16,7 +16,7 @@ class CreateRole extends AbstractMigration
         $roleTable = $this->table('role', ['signed' => false]);
 
         $roleTable->addColumn('name', 'string', ['limit' => 50])
-            ->addColumn('status', 'boolean', ['default' => 1])
+            ->addColumn('status', 'boolean', ['default' => true])
             ->addColumn('created_at', 'datetime')
             ->addColumn('updated_at', 'datetime', ['null' => true])
             ->addIndex('name', ['name' => 'idx_role_name', 'unique' => true])

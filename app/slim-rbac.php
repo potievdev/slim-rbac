@@ -1,5 +1,7 @@
 <?php
 
+use Potievdev\SlimRbac\Console\SlimRbacConsoleApplication;
+
 $autoloader = require __DIR__ . '/../src/composer_autoloader.php';
 
 if (!$autoloader()) {
@@ -10,4 +12,4 @@ if (!$autoloader()) {
     );
 }
 
-return new \Potievdev\SlimRbac\Console\SlimRbacConsoleApplication();
+return new SlimRbacConsoleApplication();

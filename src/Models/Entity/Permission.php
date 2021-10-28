@@ -2,12 +2,16 @@
 
 namespace Potievdev\SlimRbac\Models\Entity;
 
+use DateTime;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
  * Permission
  *
- * @ORM\Table(name="permission", uniqueConstraints={@ORM\UniqueConstraint(name="idx_role_name", columns={"name"})})
+ * @ORM\Table(
+ *     name="permission",
+ *     uniqueConstraints={@ORM\UniqueConstraint(name="idx_permission_name", columns={"name"})}
+ * )
  * @ORM\Entity(repositoryClass="Potievdev\SlimRbac\Models\Repository\PermissionRepository")
  * @ORM\HasLifecycleCallbacks
  */
@@ -37,14 +41,14 @@ class Permission
     private $status = '1';
 
     /**
-     * @var \DateTime
+     * @var DateTime
      *
      * @ORM\Column(name="created_at", type="datetime", nullable=false)
      */
     private $createdAt;
 
     /**
-     * @var \DateTime
+     * @var DateTime
      *
      * @ORM\Column(name="updated_at", type="datetime", nullable=true)
      */
@@ -57,115 +61,75 @@ class Permission
      */
     private $description;
 
-    /**
-     * @return int
-     */
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }
 
-    /**
-     * @param int $id
-     */
-    public function setId($id)
+    public function setId(int $id)
     {
         $this->id = $id;
     }
 
-    /**
-     * @return string
-     */
-    public function getName()
+    public function getName(): string
     {
         return $this->name;
     }
 
-    /**
-     * @param string $name
-     */
-    public function setName($name)
+    public function setName(string $name)
     {
         $this->name = $name;
     }
 
-    /**
-     * @return bool
-     */
-    public function isStatus()
+    public function isStatus(): bool
     {
         return $this->status;
     }
 
-    /**
-     * @param bool $status
-     */
-    public function setStatus($status)
+    public function setStatus(bool $status)
     {
         $this->status = $status;
     }
 
-    /**
-     * @return \DateTime
-     */
-    public function getCreatedAt()
+    public function getCreatedAt(): DateTime
     {
         return $this->createdAt;
     }
 
-    /**
-     * @param \DateTime $createdAt
-     */
-    public function setCreatedAt($createdAt)
+    public function setCreatedAt(DateTime $createdAt)
     {
         $this->createdAt = $createdAt;
     }
 
-    /**
-     * @return \DateTime
-     */
-    public function getUpdatedAt()
+    public function getUpdatedAt(): DateTime
     {
         return $this->updatedAt;
     }
 
-    /**
-     * @param \DateTime $updatedAt
-     */
-    public function setUpdatedAt($updatedAt)
+    public function setUpdatedAt(DateTime $updatedAt)
     {
         $this->updatedAt = $updatedAt;
     }
 
-    /**
-     * @return string
-     */
-    public function getDescription()
+    public function getDescription(): string
     {
         return $this->description;
     }
 
-    /**
-     * @param string $description
-     */
-    public function setDescription($description)
+    public function setDescription(string $description)
     {
         $this->description = $description;
     }
 
-    /** @ORM\PrePersist
-     * @throws \Exception
-     */
+    /** @ORM\PrePersist  */
     public function prePersist()
     {
-        $this->createdAt = new \DateTime();
+        $this->createdAt = new DateTime();
     }
 
-    /** @ORM\PreUpdate
-     * @throws \Exception
-     */
+    /** @ORM\PreUpdate  */
     public function preUpdate()
     {
-        $this->updatedAt = new \DateTime();
+        $this->updatedAt = new DateTime();
     }
 }

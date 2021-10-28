@@ -16,10 +16,10 @@ class CreatePermission extends AbstractMigration
         $permissionTable = $this->table('permission', ['signed' => false]);
 
         $permissionTable->addColumn('name', 'string', ['limit' => 100])
-            ->addColumn('status', 'boolean', ['default' => 1])
+            ->addColumn('status', 'boolean', ['default' => true])
             ->addColumn('created_at', 'datetime')
             ->addColumn('updated_at', 'datetime', ['null' => true])
-            ->addIndex('name', ['name' => 'idx_role_name' ,'unique' => true])
+            ->addIndex('name', ['name' => 'idx_permission_name' ,'unique' => true])
             ->create();
     }
 }

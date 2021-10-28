@@ -3,8 +3,7 @@
 namespace Potievdev\SlimRbac\Component;
 
 use Doctrine\ORM\EntityManager;
-use Doctrine\ORM\OptimisticLockException;
-use Potievdev\SlimRbac\Exception\DatabaseException;
+use Doctrine\ORM\Query\QueryException;
 use Potievdev\SlimRbac\Exception\InvalidArgumentException;
 use Potievdev\SlimRbac\Helper\ValidatorHelper;
 use Potievdev\SlimRbac\Models\RepositoryRegistry;
@@ -26,7 +25,7 @@ class BaseComponent
     protected $repositoryRegistry;
 
     /**
-     * AuthManager constructor.
+     * RbacManager constructor.
      * @param AuthOptions $authOptions
      */
     public function __construct(AuthOptions $authOptions)
@@ -37,31 +36,12 @@ class BaseComponent
     }
 
     /**
-     * Insert or update entity
-     * @param  object $entity
-     * @return object
-     * @throws DatabaseException
-     */
-    protected function saveEntity($entity)
-    {
-        try {
-            $this->entityManager->persist($entity);
-            $this->entityManager->flush($entity);
-            return $entity;
-        } catch (OptimisticLockException $e) {
-            throw new DatabaseException($e->getMessage());
-        }
-    }
-
-    /**
-     * Checks access status
-     * @param integer $userId
-     * @param string $permissionName
-     * @return bool
+     * Checks access status.
+     *
      * @throws InvalidArgumentException
-     * @throws \Doctrine\ORM\Query\QueryException
+     * @throws QueryException
      */
-    public function checkAccess($userId, $permissionName)
+    public function checkAccess(int $userId, string $permissionName): bool
     {
         if (ValidatorHelper::isInteger($userId) == false) {
             throw new InvalidArgumentException('User identifier must be number.');
@@ -81,7 +61,6 @@ class BaseComponent
 
             if (count($rootRoleIds) > 0) {
 
-                /** @var integer[] $allRoleIds */
                 $allRoleIds = $this->repositoryRegistry
                     ->getRoleHierarchyRepository()
                     ->getAllRoleIdsHierarchy($rootRoleIds);

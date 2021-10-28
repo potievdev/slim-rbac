@@ -2,76 +2,60 @@
 
 namespace Potievdev\SlimRbac\Structure;
 
+use Doctrine\ORM\EntityManager;
+
 /**
  * Authorization manager options structure.
- * The instance of this class accepted as argument for constructor of AuthManager
+ * The instance of this class accepted as argument for constructor of RbacManager
  * Class AuthOptions
  * @package Potievdev\Structure
  */
 class AuthOptions
 {
-
-    /** Default field name */
-    const DEFAULT_VARIABLE_NAME = 'userId';
+    /** Default user id field name */
+    const DEFAULT_USER_ID_FIELD_NAME = 'userId';
 
     const ATTRIBUTE_STORAGE_TYPE = 1;
     const HEADER_STORAGE_TYPE = 2;
     const COOKIE_STORAGE_TYPE = 3;
 
-    /** @var  \Doctrine\ORM\EntityManager */
+    /** @var  EntityManager */
     private $entityManager;
 
-    /** @var string  $variableName variable name which saves user identifier */
-    private $variableName = self::DEFAULT_VARIABLE_NAME;
+    /** @var string $userIdFieldName field name which saves user identifier in requests */
+    private $userIdFieldName = self::DEFAULT_USER_ID_FIELD_NAME;
 
-    /** @var int $variableStorageType Type of storage where saves variable value */
-    private $variableStorageType = self::ATTRIBUTE_STORAGE_TYPE;
+    /** @var int $userIdStorageType Type of storage where will be saved user id field */
+    private $userIdStorageType = self::ATTRIBUTE_STORAGE_TYPE;
 
-    /**
-     * @return \Doctrine\ORM\EntityManager
-     */
-    public function getEntityManager()
-    {
-        return $this->entityManager;
-    }
-
-    /**
-     * @param \Doctrine\ORM\EntityManager $entityManager
-     */
-    public function setEntityManager($entityManager)
+    public function __construct(EntityManager $entityManager)
     {
         $this->entityManager = $entityManager;
     }
 
-    /**
-     * @return string
-     */
-    public function getVariableName()
+    public function getEntityManager(): EntityManager
     {
-        return $this->variableName;
+        return $this->entityManager;
     }
 
-    /**
-     * @param string $variableName
-     */
-    public function setVariableName($variableName)
+    public function getUserIdFieldName(): string
     {
-        $this->variableName = $variableName;
+        return $this->userIdFieldName;
     }
 
-    /**
-     * @return int
-     */
-    public function getVariableStorageType()
+    public function setUserIdFieldName(string $userIdFieldName): void
     {
-        return $this->variableStorageType;
+        $this->userIdFieldName = $userIdFieldName;
     }
 
-    /**
-     * @param int $variableStorageType
-     */
-    public function setVariableStorageType($variableStorageType)
+    public function getUserIdStorageType(): int
     {
-        $this->variableStorageType = $variableStorageType;
+        return $this->userIdStorageType;
     }
+
+    public function setUserIdStorageType(int $userIdStorageType): void
+    {
+        $this->userIdStorageType = $userIdStorageType;
+    }
+
 }

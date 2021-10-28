@@ -3,6 +3,11 @@
 namespace Potievdev\SlimRbac\Models;
 
 use Doctrine\ORM\EntityManager;
+use Potievdev\SlimRbac\Models\Repository\PermissionRepository;
+use Potievdev\SlimRbac\Models\Repository\RoleHierarchyRepository;
+use Potievdev\SlimRbac\Models\Repository\RolePermissionRepository;
+use Potievdev\SlimRbac\Models\Repository\RoleRepository;
+use Potievdev\SlimRbac\Models\Repository\UserRoleRepository;
 
 class RepositoryRegistry
 {
@@ -14,42 +19,27 @@ class RepositoryRegistry
         $this->entityManager = $entityManager;
     }
 
-    /**
-     * @return \Potievdev\SlimRbac\Models\Repository\PermissionRepository
-     */
-    public function getPermissionRepository()
+    public function getPermissionRepository(): PermissionRepository
     {
         return $this->entityManager->getRepository('\\Potievdev\\SlimRbac\\Models\\Entity\\Permission');
     }
 
-    /**
-     * @return \Potievdev\SlimRbac\Models\Repository\RoleRepository
-     */
-    public function getRoleRepository()
+    public function getRoleRepository(): RoleRepository
     {
         return $this->entityManager->getRepository('\\Potievdev\\SlimRbac\\Models\\Entity\\Role');
     }
 
-    /**
-     * @return \Potievdev\SlimRbac\Models\Repository\UserRoleRepository
-     */
-    public function getUserRoleRepository()
+    public function getUserRoleRepository(): UserRoleRepository
     {
         return $this->entityManager->getRepository('\\Potievdev\\SlimRbac\\Models\\Entity\\UserRole');
     }
 
-    /**
-     * @return \Potievdev\SlimRbac\Models\Repository\RolePermissionRepository
-     */
-    public function getRolePermissionRepository()
+    public function getRolePermissionRepository(): RolePermissionRepository
     {
         return $this->entityManager->getRepository('\\Potievdev\\SlimRbac\\Models\\Entity\\RolePermission');
     }
 
-    /**
-     * @return \Potievdev\SlimRbac\Models\Repository\RoleHierarchyRepository
-     */
-    public function getRoleHierarchyRepository()
+    public function getRoleHierarchyRepository(): RoleHierarchyRepository
     {
         return $this->entityManager->getRepository('\\Potievdev\\SlimRbac\\Models\\Entity\\RoleHierarchy');
     }

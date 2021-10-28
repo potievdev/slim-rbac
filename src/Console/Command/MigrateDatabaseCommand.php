@@ -28,7 +28,7 @@ class MigrateDatabaseCommand extends BaseDatabaseCommand
      * @param OutputInterface $output
      * @return int|null|void
      */
-    public function execute(InputInterface $input, OutputInterface $output)
+    public function execute(InputInterface $input, OutputInterface $output): void
     {
         parent::execute($input, $output);
         $manager = new Manager($this->config, $input, $output);
