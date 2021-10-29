@@ -43,7 +43,7 @@ class BaseComponent
      */
     public function checkAccess(int $userId, string $permissionName): bool
     {
-        if (ValidatorHelper::isInteger($userId) == false) {
+        if (ValidatorHelper::isInteger($userId) === false) {
             throw new InvalidArgumentException('User identifier must be number.');
         }
 
