@@ -3,8 +3,9 @@
 namespace Potievdev\SlimRbac\Component;
 
 use Doctrine\ORM\Query\QueryException;
+use Potievdev\SlimRbac\Component\PermissionNameExtractor\PermissionNameExtractor;
+use Potievdev\SlimRbac\Component\UserIdExtractor\UserIdExtractor;
 use Potievdev\SlimRbac\Exception\InvalidArgumentException;
-use Potievdev\SlimRbac\Structure\RbacManagerOptions;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
@@ -13,10 +14,33 @@ use Psr\Http\Message\ResponseInterface;
  * Class RbacMiddleware
  * @package Potievdev\SlimRbac\Component
  */
-class RbacMiddleware extends BaseComponent
+class RbacMiddleware
 {
     public const PERMISSION_DENIED_CODE = 403;
     public const PERMISSION_DENIED_MESSAGE = 'Permission denied';
+
+    /** @var RbacAccessChecker */
+    private $accessChecker;
+
+    /** @var UserIdExtractor */
+    private $userIdExtractor;
+
+    /** @var PermissionNameExtractor */
+    private $permissionNameExtractor;
+
+    /**
+     * @param RbacAccessChecker $accessChecker
+     * @param UserIdExtractor $userIdExtractor
+     */
+    public function __construct(
+        RbacAccessChecker $accessChecker,
+        UserIdExtractor $userIdExtractor,
+        PermissionNameExtractor $permissionNameExtractor
+    ) {
+        $this->accessChecker = $accessChecker;
+        $this->userIdExtractor = $userIdExtractor;
+        $this->permissionNameExtractor = $permissionNameExtractor;
+    }
 
     /**
      * Check access.
@@ -34,40 +58,13 @@ class RbacMiddleware extends BaseComponent
         ResponseInterface $response,
         callable $next
     ): ResponseInterface {
-        $userId = $this->getCurrentUserId($request);
-        $permissionName = $request->getUri()->getPath();
+        $userId = $this->userIdExtractor->getUserId($request);
+        $permissionName = $this->permissionNameExtractor->getPermissionName($request);
 
-        if ($this->checkAccess($userId, $permissionName)) {
-            $response = $next($request, $response);
-        } else {
-            $response = $response->withStatus(self::PERMISSION_DENIED_CODE, self::PERMISSION_DENIED_MESSAGE);
+        if ($this->accessChecker->hasAccess($userId, $permissionName)) {
+            return $next($request, $response);
         }
 
-        return $response;
-    }
-
-    private function getCurrentUserId(ServerRequestInterface $request): int
-    {
-        $userIdFieldName = $this->rbacManagerOptions->getUserIdFieldName();
-        $storageType = $this->rbacManagerOptions->getUserIdStorageType();
-
-        /** @var integer $userId */
-        switch ($storageType) {
-
-            case RbacManagerOptions::ATTRIBUTE_STORAGE_TYPE:
-                $userId = intval($request->getAttribute($userIdFieldName));
-                break;
-
-            case RbacManagerOptions::HEADER_STORAGE_TYPE:
-                $userId = intval($request->getHeaderLine($userIdFieldName));
-                break;
-
-            case RbacManagerOptions::COOKIE_STORAGE_TYPE:
-                $params = $request->getCookieParams();
-                $userId = intval($params[$userIdFieldName]);
-                break;
-        }
-
-        return $userId;
+        return $response->withStatus(self::PERMISSION_DENIED_CODE, self::PERMISSION_DENIED_MESSAGE);
     }
 }

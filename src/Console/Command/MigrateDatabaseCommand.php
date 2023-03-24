@@ -2,8 +2,9 @@
 
 namespace Potievdev\SlimRbac\Console\Command;
 
+use Potievdev\SlimRbac\Exception\ConfigNotFoundException;
+use Potievdev\SlimRbac\Exception\NotSupportedDatabaseException;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Phinx\Migration\Manager;
 
@@ -17,16 +18,15 @@ class MigrateDatabaseCommand extends BaseDatabaseCommand
     {
         $this
             ->setName('migrate')
-            ->setDescription('Applies migrations to database')
-            ->setDefinition([
-                new InputOption('--config', '-c', InputOption::VALUE_OPTIONAL, 'Path for file which initialized connection to db and return it in helper set component')
-            ]);
+            ->setDescription('Applies migrations to database');
     }
 
     /**
      * @param InputInterface $input
      * @param OutputInterface $output
-     * @return int|null|void
+     * @return void
+     * @throws ConfigNotFoundException
+     * @throws NotSupportedDatabaseException
      */
     public function execute(InputInterface $input, OutputInterface $output): void
     {

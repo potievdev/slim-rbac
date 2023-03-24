@@ -18,7 +18,7 @@ class UserRoleRepository extends EntityRepository
      *
      * @throws QueryException
      */
-    public function getUserRoleIds(int $userId): array
+    public function getUserRoleIds(string $userId): array
     {
         $qb = $this->createQueryBuilder('userRole');
 

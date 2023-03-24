@@ -12,9 +12,8 @@ coverage:
     enabled: true
     include:
         - src/Component/*
-        - src/Helper/*
         - src/Models/*
-        - src/Structure/*
     exclude:
         - src/Models/Entity/*
         - src/Models/Repository/*
+        - src/Component/services.yaml

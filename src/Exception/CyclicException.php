@@ -2,14 +2,21 @@
 
 namespace Potievdev\SlimRbac\Exception;
 
-use Exception;
-
 /**
  * This throws when cyclic line detected in roles hierarchy
  * Class CyclicException
  * @package Potievdev\SlimRbac\Exception
  */
-class CyclicException extends Exception
+class CyclicException extends BaseException
 {
-    protected $message = 'Cyclic role three detected';
+    public const MESSAGE = 'Cyclic role three detected';
+
+    public static function cycleDetected(int $parentId, int $childId): self
+    {
+        $e = new self(self::MESSAGE);
+
+        $e->additionalParams = ['parentId' => $parentId, 'childId' => $childId];
+
+        return $e;
+    }
 }

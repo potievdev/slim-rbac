@@ -4,7 +4,6 @@ namespace Potievdev\SlimRbac\Models\Repository;
 
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\Query\QueryException;
-use Potievdev\SlimRbac\Helper\ArrayHelper;
 
 /**
  * UserRoleRepository
@@ -49,7 +48,7 @@ class RoleHierarchyRepository extends EntityRepository
     {
         $childRoleIds = $this->getAllChildRoleIds($rootRoleIds);
 
-        return ArrayHelper::merge($rootRoleIds, $childRoleIds);
+        return array_merge($rootRoleIds, $childRoleIds);
     }
 
     /**
@@ -65,7 +64,7 @@ class RoleHierarchyRepository extends EntityRepository
 
         while (count($parentIds) > 0) {
             $parentIds = $this->getChildIds($parentIds);
-            $allChildIds = ArrayHelper::merge($allChildIds, $parentIds);
+            $allChildIds = array_merge($allChildIds, $parentIds);
         };
 
         return $allChildIds;

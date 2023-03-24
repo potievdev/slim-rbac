@@ -30,7 +30,7 @@ class UserRole
     /**
      * @var integer
      *
-     * @ORM\Column(name="user_id", type="integer", nullable=false)
+     * @ORM\Column(name="user_id", type="string", nullable=false)
      */
     private $userId;
 
@@ -68,12 +68,12 @@ class UserRole
         $this->id = $id;
     }
 
-    public function getUserId(): int
+    public function getUserId(): string
     {
         return $this->userId;
     }
 
-    public function setUserId(int $userId)
+    public function setUserId(string $userId)
     {
         $this->userId = $userId;
     }

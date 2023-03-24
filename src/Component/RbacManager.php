@@ -3,9 +3,10 @@
 namespace Potievdev\SlimRbac\Component;
 
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
+use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\OptimisticLockException;
+use Doctrine\ORM\ORMException;
 use Doctrine\ORM\Query\QueryException;
-use Exception;
 use Potievdev\SlimRbac\Exception\CyclicException;
 use Potievdev\SlimRbac\Exception\DatabaseException;
 use Potievdev\SlimRbac\Exception\NotUniqueException;
@@ -14,43 +15,34 @@ use Potievdev\SlimRbac\Models\Entity\Role;
 use Potievdev\SlimRbac\Models\Entity\RoleHierarchy;
 use Potievdev\SlimRbac\Models\Entity\RolePermission;
 use Potievdev\SlimRbac\Models\Entity\UserRole;
+use Potievdev\SlimRbac\Models\RepositoryRegistry;
 
 /**
  * Component for creating and controlling with role and permissions.
  * Class RbacManager
  * @package Potievdev\SlimRbac\Component
  */
-class RbacManager extends BaseComponent
+class RbacManager
 {
+    /** @var EntityManager */
+    private $entityManager;
+
+    /** @var RepositoryRegistry */
+    private $repositoryRegistry;
+
     /**
-     * Deletes all data from database. Use carefully!!!
-     *
-     * @throws DatabaseException
-     * @throws \Doctrine\DBAL\Driver\Exception|\Doctrine\DBAL\Exception
+     * @param EntityManager $entityManager
+     * @param RepositoryRegistry $repositoryRegistry
      */
-    public function removeAll()
+    public function __construct(EntityManager $entityManager, RepositoryRegistry $repositoryRegistry)
     {
-        $pdo = $this->entityManager->getConnection()->getWrappedConnection();
-        $pdo->beginTransaction();
-
-        try {
-            $pdo->exec('DELETE FROM role_permission WHERE 1 > 0');
-            $pdo->exec('DELETE FROM role_hierarchy WHERE 1 > 0');
-            $pdo->exec('DELETE FROM permission WHERE 1 > 0');
-            $pdo->exec('DELETE FROM user_role WHERE 1 > 0');
-            $pdo->exec('DELETE FROM role WHERE 1 > 0');
-
-            $pdo->commit();
-
-        } catch (Exception $e) {
-            $pdo->rollBack();
-            throw new DatabaseException($e->getMessage());
-        }
+        $this->entityManager = $entityManager;
+        $this->repositoryRegistry = $repositoryRegistry;
     }
 
     /**
      * Creates permission instance with given name and return it.
-     * @throws NotUniqueException|DatabaseException
+     * @throws NotUniqueException|DatabaseException|ORMException
      */
     public function createPermission(string $permissionMane, ?string $description = null): Permission
     {
@@ -64,7 +56,7 @@ class RbacManager extends BaseComponent
         try {
             $this->saveEntity($permission);
         } catch (UniqueConstraintViolationException $e) {
-            throw new NotUniqueException('Permission with name ' . $permissionMane . ' already created');
+            throw NotUniqueException::permissionWithNameAlreadyCreated($permissionMane);
         }
 
         return $permission;
@@ -73,7 +65,7 @@ class RbacManager extends BaseComponent
     /**
      * Creates role instance with given name and return it.
      *
-     * @throws NotUniqueException|DatabaseException
+     * @throws NotUniqueException|DatabaseException|ORMException
      */
     public function createRole(string $roleName, ?string $description = null): Role
     {
@@ -87,7 +79,7 @@ class RbacManager extends BaseComponent
         try {
             $this->saveEntity($role);
         } catch (UniqueConstraintViolationException $e) {
-            throw new NotUniqueException('Role with name ' . $roleName . ' already created');
+            throw NotUniqueException::notUniqueRole($roleName);
         }
 
         return $role;
@@ -97,7 +89,7 @@ class RbacManager extends BaseComponent
      * Add permission to role.
      *
      * @throws DatabaseException
-     * @throws NotUniqueException
+     * @throws NotUniqueException|ORMException
      */
     public function attachPermission(Role $role, Permission $permission)
     {
@@ -109,7 +101,7 @@ class RbacManager extends BaseComponent
         try {
             $this->saveEntity($rolePermission);
         } catch (UniqueConstraintViolationException $e) {
-            throw new NotUniqueException('Permission ' . $permission->getName() . ' is already assigned to role ' . $role->getName());
+            throw NotUniqueException::permissionAlreadyAttachedToRole($permission->getName(), $role->getName());
         }
     }
 
@@ -119,7 +111,7 @@ class RbacManager extends BaseComponent
      * @throws CyclicException
      * @throws DatabaseException
      * @throws NotUniqueException
-     * @throws QueryException
+     * @throws QueryException|ORMException
      */
     public function attachChildRole(Role $parentRole, Role $childRole)
     {
@@ -133,7 +125,10 @@ class RbacManager extends BaseComponent
         try {
             $this->saveEntity($roleHierarchy);
         }  catch (UniqueConstraintViolationException $e) {
-            throw new NotUniqueException('Child role ' . $childRole->getName() . ' is already has parent role ' . $parentRole->getName());
+            throw NotUniqueException::childRoleAlreadyAttachedToGivenParentRole(
+                $childRole->getName(),
+                $parentRole->getName()
+            );
         }
     }
 
@@ -141,9 +136,9 @@ class RbacManager extends BaseComponent
      * Assign role to user.
      *
      * @throws NotUniqueException
-     * @throws DatabaseException
+     * @throws DatabaseException|ORMException
      */
-    public function assign(Role $role, int $userId)
+    public function assignRoleToUser(Role $role, int $userId)
     {
         $userRole = new UserRole();
 
@@ -153,7 +148,7 @@ class RbacManager extends BaseComponent
         try {
             $this->saveEntity($userRole);
         } catch (UniqueConstraintViolationException $e) {
-            throw new NotUniqueException('Role ' . $role->getName() . 'is already assigned to user with identifier ' . $userId);
+            throw NotUniqueException::roleAlreadyAssignedToUser($role->getName(), $userId);
         }
     }
 
@@ -170,14 +165,14 @@ class RbacManager extends BaseComponent
             ->hasChildRoleId($parentRoleId, $childRoleId);
 
         if ($result === true) {
-            throw new CyclicException('There detected cyclic line. Role with id = ' . $parentRoleId . ' has child role with id =' . $childRoleId);
+            throw CyclicException::cycleDetected($parentRoleId, $childRoleId);
         }
     }
 
     /**
      * Insert or update entity.
      *
-     * @throws DatabaseException|UniqueConstraintViolationException
+     * @throws DatabaseException|ORMException
      */
     private function saveEntity(object $entity): void
     {
@@ -188,4 +183,5 @@ class RbacManager extends BaseComponent
             throw new DatabaseException($e->getMessage());
         }
     }
+
 }

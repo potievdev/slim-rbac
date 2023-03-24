@@ -17,7 +17,7 @@ class SlimRbacConsoleApplication extends Application
      */
     public function __construct(string $version = '1.0.0')
     {
-        parent::__construct('https://github.com/potievdev/slim-rbac?v=' . $version);
+        parent::__construct('https://github.com/potievdev/slim_rbac?v=' . $version);
 
         $this->addCommands([
             new Command\CreateConfigCommand(),

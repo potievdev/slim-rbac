@@ -24,7 +24,7 @@ This package helps you to release access control logic via [RBAC](https://en.wik
 ### First step
 
 ```sh
-$ composer require potievdev/slim-rbac "^2.0"
+$ composer require potievdev/slim_rbac "^2.0"
 ```
 
 ### Second step
@@ -51,7 +51,7 @@ Run next command in root directory or in directory where saved
 configuration files of project
 
 ```sh
-$ vendor/bin/slim-rbac create
+$ vendor/bin/slim_rbac create
 ```
 
 Command creates the `sr-config.php` file with next content
@@ -87,7 +87,7 @@ Configure database connections params.
 After configuration database connection, run next command for applying database migrations
 
 ```sh
-$ vendor/bin/slim-rbac migrate
+$ vendor/bin/slim_rbac migrate
 ```
 
 If all `OK` you must see list of applied migrations, which prints `phinx`
@@ -178,8 +178,8 @@ Simple example
         $this->rbacManager->attachChildRole($admin, $moderator);
 
 // Assigning roles to users
-        $this->rbacManager->assign($moderator, 1);
-        $this->rbacManager->assign($admin, 2);
+        $this->rbacManager->assignRoleToUser($moderator, 1);
+        $this->rbacManager->assignRoleToUser($admin, 2);
  ```
 
 ## :crossed_flags: Contribution

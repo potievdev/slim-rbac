@@ -2,10 +2,10 @@
 
 namespace Tests\Unit;
 
+use Doctrine\ORM\ORMException;
 use Doctrine\ORM\Query\QueryException;
 use Potievdev\SlimRbac\Exception\CyclicException;
 use Potievdev\SlimRbac\Exception\DatabaseException;
-use Potievdev\SlimRbac\Exception\InvalidArgumentException;
 use Potievdev\SlimRbac\Exception\NotUniqueException;
 use Potievdev\SlimRbac\Models\Entity\Permission;
 use Potievdev\SlimRbac\Models\Entity\Role;
@@ -20,13 +20,11 @@ class RbacManagerTest extends BaseTestCase
      * @throws CyclicException
      * @throws DatabaseException
      * @throws NotUniqueException
-     * @throws QueryException
+     * @throws QueryException|ORMException
      */
     public function setUp(): void
     {
         parent::setUp();
-
-        $this->rbacManager->removeAll();
 
         $edit = $this->rbacManager->createPermission('edit');
         $write = $this->rbacManager->createPermission('write');
@@ -39,8 +37,8 @@ class RbacManagerTest extends BaseTestCase
 
         $this->rbacManager->attachChildRole($admin, $moderator);
 
-        $this->rbacManager->assign($moderator, self::MODERATOR_USER_ID);
-        $this->rbacManager->assign($admin, self::ADMIN_USER_ID);
+        $this->rbacManager->assignRoleToUser($moderator, self::MODERATOR_USER_ID);
+        $this->rbacManager->assignRoleToUser($admin, self::ADMIN_USER_ID);
     }
 
     public function successCasesProvider(): array
@@ -57,12 +55,11 @@ class RbacManagerTest extends BaseTestCase
      * @param integer $userId user id
      * @param string $roleOrPermission role or permission name
      * @throws QueryException
-     * @throws InvalidArgumentException
      * @dataProvider successCasesProvider
      */
     public function testCheckAccessSuccessCases(int $userId, string $roleOrPermission): void
     {
-        $this->assertTrue($this->rbacManager->checkAccess($userId, $roleOrPermission));
+        $this->assertTrue($this->accessChecker->hasAccess($userId, $roleOrPermission));
     }
 
     /**
@@ -83,19 +80,18 @@ class RbacManagerTest extends BaseTestCase
      * @param integer $userId user id
      * @param string $roleOrPermission role or permission name
      * @throws QueryException
-     * @throws InvalidArgumentException
      * @dataProvider failCasesProvider
      */
     public function testCheckAccessFailureCases(int $userId, string $roleOrPermission): void
     {
-        $this->assertFalse($this->rbacManager->checkAccess($userId, $roleOrPermission));
+        $this->assertFalse($this->accessChecker->hasAccess($userId, $roleOrPermission));
     }
 
     /**
      * Testing adding not unique permission
      *
      * @throws DatabaseException
-     * @throws NotUniqueException
+     * @throws NotUniqueException|ORMException
      */
     public function testCheckAddingNotUniquePermission()
     {
@@ -107,7 +103,7 @@ class RbacManagerTest extends BaseTestCase
      * Testing adding not unique role
      *
      * @throws DatabaseException
-     * @throws NotUniqueException
+     * @throws NotUniqueException|ORMException
      */
     public function testCheckAddingNonUniqueRole()
     {
@@ -120,7 +116,7 @@ class RbacManagerTest extends BaseTestCase
      * @throws CyclicException
      * @throws DatabaseException
      * @throws NotUniqueException
-     * @throws QueryException
+     * @throws QueryException|ORMException
      */
     public function testCheckCyclicException()
     {
@@ -157,7 +153,7 @@ class RbacManagerTest extends BaseTestCase
     }
 
     /**
-     * @throws DatabaseException
+     * @throws DatabaseException|ORMException
      */
     public function testCheckDoubleAssigningPermissionToSameRole()
     {
@@ -180,7 +176,7 @@ class RbacManagerTest extends BaseTestCase
      * @throws QueryException
      * @throws CyclicException
      * @throws DatabaseException
-     * @throws NotUniqueException
+     * @throws NotUniqueException|ORMException
      *
      */
     public function testCheckAddingSameChildRoleDoubleTime()

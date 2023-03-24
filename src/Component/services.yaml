@@ -1,0 +1,33 @@
+services:
+  rbacConfig:
+    class: Potievdev\SlimRbac\Component\Config\RbacConfig
+    factory: [ 'Potievdev\SlimRbac\Component\Config\RbacConfig', 'createFromConfigFile' ]
+
+  accessChecker:
+    class: Potievdev\SlimRbac\Component\RbacAccessChecker
+    arguments: [ '@repositoryRegistry' ]
+
+  userIdExtractor:
+    class: Potievdev\SlimRbac\Component\UserIdExtractor\UserIdExtractor
+    factory: [ 'Potievdev\SlimRbac\Component\ComponentsFactory', 'createUserIdExtractor' ]
+    arguments: [ '@rbacConfig' ]
+
+  permissionNameExtractor:
+    class: Potievdev\SlimRbac\Component\PermissionNameExtractor\UriPathPermissionNameExtractor
+
+  entityManager:
+    class: Doctrine\ORM\EntityManager
+    factory: [ 'Potievdev\SlimRbac\Component\ComponentsFactory', 'createEntityManager' ]
+    arguments: [ '@rbacConfig' ]
+
+  repositoryRegistry:
+    class: Potievdev\SlimRbac\Models\RepositoryRegistry
+    arguments: [ '@entityManager' ]
+
+  middleware:
+    class: Potievdev\SlimRbac\Component\RbacMiddleware
+    arguments: [ '@accessChecker', '@userIdExtractor', '@permissionNameExtractor' ]
+
+  manager:
+    class: Potievdev\SlimRbac\Component\RbacManager
+    arguments: [ '@entityManager', '@repositoryRegistry' ]

@@ -2,10 +2,12 @@
 
 namespace Tests\Unit;
 
-use Doctrine\ORM\EntityManager;
+use Exception;
+use Potievdev\SlimRbac\Component\RbacAccessChecker;
+use Potievdev\SlimRbac\Component\RbacContainer;
 use Potievdev\SlimRbac\Component\RbacManager;
+use Potievdev\SlimRbac\Exception\DatabaseException;
 use Potievdev\SlimRbac\Models\RepositoryRegistry;
-use Potievdev\SlimRbac\Structure\RbacManagerOptions;
 
 /**
  * Class BaseTestCase
@@ -23,20 +25,51 @@ class BaseTestCase extends \PHPUnit_Framework_TestCase
     /** @var RbacManager $rbacManager */
     protected $rbacManager;
 
-    /** @var RbacManagerOptions $rbacManagerOptions */
-    protected $rbacManagerOptions;
-
-    /** @var RbacManager $rbacManager */
+    /** @var RepositoryRegistry $repositoryRegistry */
     protected $repositoryRegistry;
 
+    /** @var RbacAccessChecker $accessChecker */
+    protected $accessChecker;
+
+    protected $rbacContainer;
+
     /**
-     * Initializing RbacManagerOptions, RbacManager and RbacManagerOptions
+     * Initializing RbacManager.
+     * @throws DatabaseException
      */
     public function setUp(): void
     {
-        $entityManager = require __DIR__ . '/../../config/sr-config.php';
-        $this->rbacManagerOptions = new RbacManagerOptions($entityManager);
-        $this->rbacManager = new RbacManager($this->rbacManagerOptions);
-        $this->repositoryRegistry = new RepositoryRegistry($entityManager);
+        $this->rbacContainer = new RbacContainer();
+        $this->rbacManager = $this->rbacContainer->getRbacManager();
+        $this->repositoryRegistry = $this->rbacContainer->getInnerContainer()->get('repositoryRegistry');
+        $this->accessChecker = $this->rbacContainer->getInnerContainer()->get('accessChecker');
+        $this->clearDatabase();
+    }
+
+    /**
+     * @throws DatabaseException
+     */
+    private function clearDatabase(): void
+    {
+        $pdo = $this->rbacContainer->getInnerContainer()
+            ->get('entityManager')
+            ->getConnection()
+            ->getNativeConnection();
+
+        $pdo->beginTransaction();
+
+        try {
+            $pdo->exec('DELETE FROM role_permission WHERE 1 > 0');
+            $pdo->exec('DELETE FROM role_hierarchy WHERE 1 > 0');
+            $pdo->exec('DELETE FROM permission WHERE 1 > 0');
+            $pdo->exec('DELETE FROM user_role WHERE 1 > 0');
+            $pdo->exec('DELETE FROM role WHERE 1 > 0');
+
+            $pdo->commit();
+
+        } catch (Exception $e) {
+            $pdo->rollBack();
+            throw new DatabaseException($e->getMessage());
+        }
     }
 }

@@ -2,16 +2,18 @@
 
 namespace Tests\Unit;
 
+use Doctrine\ORM\ORMException;
 use Doctrine\ORM\Query\QueryException;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
 use GuzzleHttp\Psr7\ServerRequest;
-use Potievdev\SlimRbac\Component\RbacMiddleware;
+use Potievdev\SlimRbac\Component\Config\RbacConfig;
+use Potievdev\SlimRbac\Component\RbacContainer;
+use Potievdev\SlimRbac\Exception\ConfigNotFoundException;
 use Potievdev\SlimRbac\Exception\CyclicException;
 use Potievdev\SlimRbac\Exception\DatabaseException;
 use Potievdev\SlimRbac\Exception\InvalidArgumentException;
 use Potievdev\SlimRbac\Exception\NotUniqueException;
-use Potievdev\SlimRbac\Structure\RbacManagerOptions;
 
 /**
  * Class for testing RbacMiddleware
@@ -33,13 +35,11 @@ class RbacMiddlewareTest extends BaseTestCase
      * @throws CyclicException
      * @throws DatabaseException
      * @throws NotUniqueException
-     * @throws QueryException
+     * @throws QueryException|ORMException
      */
     public function setUp(): void
     {
         parent::setUp();
-
-        $this->rbacManager->removeAll();
 
         $edit = $this->rbacManager->createPermission('edit', 'Edit permission');
         $write = $this->rbacManager->createPermission('write', 'Write permission');
@@ -51,8 +51,8 @@ class RbacMiddlewareTest extends BaseTestCase
         $this->rbacManager->attachPermission($admin, $write);
         $this->rbacManager->attachChildRole($admin, $moderator);
 
-        $this->rbacManager->assign($moderator, self::MODERATOR_USER_ID);
-        $this->rbacManager->assign($admin, self::ADMIN_USER_ID);
+        $this->rbacManager->assignRoleToUser($moderator, self::MODERATOR_USER_ID);
+        $this->rbacManager->assignRoleToUser($admin, self::ADMIN_USER_ID);
 
         $this->callable = function (Request $request, Response $response) {
             return $response;
@@ -67,8 +67,8 @@ class RbacMiddlewareTest extends BaseTestCase
      */
     public function testCheckAccessSuccessCase()
     {
-        $middleware = new RbacMiddleware($this->rbacManagerOptions);
-        $request = $this->request->withAttribute($this->rbacManagerOptions->getUserIdFieldName(), self::ADMIN_USER_ID);
+        $middleware = (new RbacContainer())->getRbacMiddleware();
+        $request = $this->request->withAttribute('userId', self::ADMIN_USER_ID);
         $response = $middleware->__invoke($request, $this->response, $this->callable);
         $this->assertEquals(200, $response->getStatusCode());
     }
@@ -79,8 +79,8 @@ class RbacMiddlewareTest extends BaseTestCase
      */
     public function testCheckAccessDeniedCase()
     {
-        $middleware = new RbacMiddleware($this->rbacManagerOptions);
-        $request = $this->request->withAttribute($this->rbacManagerOptions->getUserIdFieldName(), self::MODERATOR_USER_ID);
+        $middleware = (new RbacContainer())->getRbacMiddleware();
+        $request = $this->request->withAttribute('userId', self::MODERATOR_USER_ID);
         $response = $middleware->__invoke($request, $this->response, $this->callable);
         $this->assertEquals(403, $response->getStatusCode());
     }
@@ -88,13 +88,13 @@ class RbacMiddlewareTest extends BaseTestCase
     /**
      * @throws QueryException
      * @throws InvalidArgumentException
+     * @throws ConfigNotFoundException
      */
     public function testCheckReadingUserIdFromHeader()
     {
-        $rbacManagerOptions = $this->rbacManagerOptions;
-        $rbacManagerOptions->setUserIdStorageType(RbacManagerOptions::HEADER_STORAGE_TYPE);
-        $middleware = new RbacMiddleware($rbacManagerOptions);
-        $request = $this->request->withHeader($rbacManagerOptions->getUserIdFieldName(), self::ADMIN_USER_ID);
+        $middleware = (new RbacContainer($this->createRbacConfig(RbacConfig::HEADER_RESOURCE_TYPE)))
+            ->getRbacMiddleware();
+        $request = $this->request->withHeader('userId', self::ADMIN_USER_ID);
         $response = $middleware->__invoke($request, $this->response, $this->callable);
         $this->assertEquals(200, $response->getStatusCode());
     }
@@ -102,15 +102,35 @@ class RbacMiddlewareTest extends BaseTestCase
     /**
      * @throws QueryException
      * @throws InvalidArgumentException
+     * @throws ConfigNotFoundException
      */
     public function testCheckReadingUserIdFromCookie()
     {
-        $rbacManagerOptions = $this->rbacManagerOptions;
-        $rbacManagerOptions->setUserIdStorageType(RbacManagerOptions::COOKIE_STORAGE_TYPE);
-        $middleware = new RbacMiddleware($rbacManagerOptions);
-        $request = $this->request->withCookieParams([$rbacManagerOptions->getUserIdFieldName() => self::ADMIN_USER_ID]);
+        $middleware = (new RbacContainer($this->createRbacConfig(RbacConfig::COOKIE_RESOURCE_TYPE)))
+            ->getRbacMiddleware();
+        $request = $this->request->withCookieParams(['userId' => self::ADMIN_USER_ID]);
         $response = $middleware->__invoke($request, $this->response, $this->callable);
         $this->assertEquals(200, $response->getStatusCode());
+    }
+
+    /**
+     * @throws ConfigNotFoundException
+     */
+    private function createRbacConfig(?string $resourceTypeId): RbacConfig
+    {
+        $rbacConfig = RbacConfig::createFromConfigFile();
+
+        return new RbacConfig(
+            $rbacConfig->getDatabaseDriver(),
+            $rbacConfig->getDatabaseHost(),
+            $rbacConfig->getDatabaseUser(),
+            $rbacConfig->getDatabasePassword(),
+            $rbacConfig->getDatabasePort(),
+            $rbacConfig->getDatabaseName(),
+            $rbacConfig->getDatabaseCharset(),
+            $rbacConfig->getUserIdFieldName(),
+            $resourceTypeId ?? $rbacConfig->getUserIdResourceType()
+        );
     }
 
 }

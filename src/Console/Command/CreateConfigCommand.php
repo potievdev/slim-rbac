@@ -16,7 +16,7 @@ class CreateConfigCommand extends Command
     {
         $this
             ->setName('create-config')
-            ->setDescription('This command creates sr-config.php file in working directory');
+            ->setDescription('This command creates sr_config.yaml file in working directory');
     }
 
     /**
@@ -26,9 +26,9 @@ class CreateConfigCommand extends Command
      */
     public function execute(InputInterface $input, OutputInterface $output)
     {
-        $configFile = file_get_contents(__DIR__ . '/../../../config/sr-config.example.php');
+        $configFile = file_get_contents(__DIR__ . '/../../../config/sr_config.example.yaml');
         $currentDir = getcwd();
-        file_put_contents($currentDir . '/sr-config.php', $configFile);
-        $output->writeln("File sr-config.php created in directory: $currentDir");
+        file_put_contents($currentDir . '/sr_config.yaml', $configFile);
+        $output->writeln("File sr_config.yaml created in directory: $currentDir");
     }
 }

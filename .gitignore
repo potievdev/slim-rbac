@@ -8,4 +8,4 @@ vendor/*
 phinx.yml
 
 # Exclude configurations file
-config/sr-config.php
+config/sr_config.yaml

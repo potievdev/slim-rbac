@@ -2,14 +2,18 @@
 
 namespace Potievdev\SlimRbac\Exception;
 
-use Exception;
-
 /**
  * This throws when cyclic line detected in roles hierarchy
  * Class CyclicException
  * @package Potievdev\SlimRbac\Exception
  */
-class ConfigNotFoundException extends Exception
+class ConfigNotFoundException extends BaseException
 {
-    protected $message = 'Cyclic role three detected';
+    public static function configFileNotFound(array $searchedPaths): self
+    {
+        $e = new self('Config file not found.');
+        $e->additionalParams = ['searchedPaths' => $searchedPaths];
+
+        return $e;
+    }
 }
