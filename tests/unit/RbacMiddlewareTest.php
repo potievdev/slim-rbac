@@ -69,7 +69,7 @@ class RbacMiddlewareTest extends BaseTestCase
     {
         $middleware = (new RbacContainer())->getRbacMiddleware();
         $request = $this->request->withAttribute('userId', self::ADMIN_USER_ID);
-        $response = $middleware->__invoke($request, $this->response, $this->callable);
+        $response = $middleware($request, $this->response, $this->callable);
         $this->assertEquals(200, $response->getStatusCode());
     }
 
@@ -81,7 +81,7 @@ class RbacMiddlewareTest extends BaseTestCase
     {
         $middleware = (new RbacContainer())->getRbacMiddleware();
         $request = $this->request->withAttribute('userId', self::MODERATOR_USER_ID);
-        $response = $middleware->__invoke($request, $this->response, $this->callable);
+        $response = $middleware($request, $this->response, $this->callable);
         $this->assertEquals(403, $response->getStatusCode());
     }
 
@@ -95,7 +95,7 @@ class RbacMiddlewareTest extends BaseTestCase
         $middleware = (new RbacContainer($this->createRbacConfig(RbacConfig::HEADER_RESOURCE_TYPE)))
             ->getRbacMiddleware();
         $request = $this->request->withHeader('userId', self::ADMIN_USER_ID);
-        $response = $middleware->__invoke($request, $this->response, $this->callable);
+        $response = $middleware($request, $this->response, $this->callable);
         $this->assertEquals(200, $response->getStatusCode());
     }
 
@@ -109,7 +109,7 @@ class RbacMiddlewareTest extends BaseTestCase
         $middleware = (new RbacContainer($this->createRbacConfig(RbacConfig::COOKIE_RESOURCE_TYPE)))
             ->getRbacMiddleware();
         $request = $this->request->withCookieParams(['userId' => self::ADMIN_USER_ID]);
-        $response = $middleware->__invoke($request, $this->response, $this->callable);
+        $response = $middleware($request, $this->response, $this->callable);
         $this->assertEquals(200, $response->getStatusCode());
     }
 
